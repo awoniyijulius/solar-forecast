@@ -33,14 +33,39 @@ async def root():
 
 @app.on_event("startup")
 async def startup_event():
-    """Verify connections on startup"""
+    """Verify connections on startup and start background scheduler"""
     from app.services.cache import CacheClient
+    from app.jobs import precompute
+    import asyncio
     
+    # 1. Initialize Cache
     try:
         cache = CacheClient()
-        cache.r.ping()
-        print("✅ Redis connection successful")
+        if cache.redis_client:
+             print("✅ Redis connection successful")
+        else:
+             print("📂 DiskCache initialized (Redis unavailable)")
     except Exception as e:
-        print(f"⚠️ Redis connection failed: {e}")
+        print(f"⚠️ Cache init warning: {e}")
+    
+    # 2. Run initial precompute immediately (non-blocking if possible, but for v1 blocking is safer to ensure data exists)
+    print("🔄 Running initial precompute job...")
+    try:
+        await precompute.run_precompute()
+        print("✅ Initial precompute complete")
+    except Exception as e:
+        print(f"❌ Initial precompute failed: {e}")
+
+    # 3. Start Background Loop for 15-min updates
+    async def schedule_precompute():
+        while True:
+            await asyncio.sleep(900) # 15 minutes
+            print("⏰ Triggering scheduled precompute...")
+            try:
+                await precompute.run_precompute()
+            except Exception as e:
+                print(f"❌ Scheduled precompute failed: {e}")
+
+    asyncio.create_task(schedule_precompute())
     
     print("🚀 SolarSight Backend started successfully")

@@ -1,6 +1,5 @@
-services:
   # ---------------------------------------------------
-  # 🌞 BACKEND API (FastAPI)
+  # 🌞 BACKEND API (FastAPI) [FREE TIER]
   # ---------------------------------------------------
   - type: web
     name: solarsight-api
@@ -12,16 +11,11 @@ services:
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.3
-      - key: REDIS_URL
-        fromService:
-          type: redis
-          name: solarsight-redis
-          property: connectionString
       - key: MODEL_PATH
         value: /opt/render/project/src/ml/artifacts/lightgbm_model.joblib
 
   # ---------------------------------------------------
-  # 🎨 FRONTEND (React + Vite)
+  # 🎨 FRONTEND (React + Vite) [FREE TIER]
   # ---------------------------------------------------
   - type: web
     name: solarsight-frontend
@@ -36,7 +30,7 @@ services:
           property: host
 
   # ---------------------------------------------------
-  # 🛡️ ADMIN DASHBOARD (Streamlit)
+  # 🛡️ ADMIN DASHBOARD (Streamlit) [FREE TIER]
   # ---------------------------------------------------
   - type: web
     name: solarsight-admin
@@ -51,40 +45,8 @@ services:
           type: web
           name: solarsight-api
           property: host
-      - key: REDIS_URL
-        fromService:
-          type: redis
-          name: solarsight-redis
-          property: connectionString
-
-  # ---------------------------------------------------
-  # 🧠 PRECOMPUTE JOB (Cron)
-  # ---------------------------------------------------
-  - type: cron
-    name: solarsight-precompute
-    env: python
-    region: oregon
-    schedule: "*/15 * * * *"  # Run every 15 minutes
-    buildCommand: pip install -r backend/requirements.txt
-    startCommand: cd backend && python -m app.jobs.precompute
-    envVars:
       - key: BACKEND_URL
         fromService:
           type: web
           name: solarsight-api
           property: host
-      - key: REDIS_URL
-        fromService:
-          type: redis
-          name: solarsight-redis
-          property: connectionString
-
-
-  # ---------------------------------------------------
-  # 💾 REDIS CACHE
-  # ---------------------------------------------------
-  - type: redis
-    name: solarsight-redis
-    region: oregon
-    plan: free
-    ipAllowList: [] # Only allow internal connections
