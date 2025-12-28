@@ -40,7 +40,11 @@ const Dashboard: React.FC = () => {
     setError(null);
     try {
       // Backend handles caching and precompute
-      const response = await axios.get(`/api/predictions/${location}`);
+      let apiUrl = import.meta.env.VITE_API_URL || '';
+      if (apiUrl && !apiUrl.startsWith('http')) {
+        apiUrl = `https://${apiUrl}`;
+      }
+      const response = await axios.get(`${apiUrl}/api/predictions/${location}`);
       setData(response.data);
     } catch (err: any) {
       if (err.response?.status === 503) {

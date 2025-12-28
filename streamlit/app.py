@@ -10,7 +10,9 @@ from datetime import datetime
 st.set_page_config(page_title="SolarSight Admin | Metrics & Controls", layout="wide")
 
 # Paths and Config
-BACKEND_URL = os.environ.get("BACKEND_URL", "http://backend:8000")
+# Paths and Config
+BACKEND_HOST = os.environ.get("BACKEND_URL", "backend:8000").replace("http://", "").replace("https://", "")
+BACKEND_URL = f"http://{BACKEND_HOST}"
 METRICS_PATH = "/app/ml/artifacts/metrics.json"
 
 # Helper to load metrics with robust error handling

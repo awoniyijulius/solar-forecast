@@ -26,7 +26,6 @@ services:
   - type: web
     name: solarsight-frontend
     env: static
-    region: oregon
     buildCommand: cd frontend && npm install && npm run build
     staticPublishPath: frontend/dist
     envVars:
@@ -34,7 +33,7 @@ services:
         fromService:
           type: web
           name: solarsight-api
-          property: url
+          property: host
 
   # ---------------------------------------------------
   # 🛡️ ADMIN DASHBOARD (Streamlit)
@@ -51,7 +50,7 @@ services:
         fromService:
           type: web
           name: solarsight-api
-          property: url
+          property: host
       - key: REDIS_URL
         fromService:
           type: redis
@@ -73,7 +72,7 @@ services:
         fromService:
           type: web
           name: solarsight-api
-          property: url
+          property: host
       - key: REDIS_URL
         fromService:
           type: redis
