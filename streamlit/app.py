@@ -10,10 +10,10 @@ from datetime import datetime
 st.set_page_config(page_title="SolarSight Admin | Metrics & Controls", layout="wide")
 
 # Paths and Config
-# Paths and Config
 BACKEND_HOST = os.environ.get("BACKEND_URL", "backend:8000").replace("http://", "").replace("https://", "")
 BACKEND_URL = f"http://{BACKEND_HOST}"
-METRICS_PATH = "/app/ml/artifacts/metrics.json"
+# Use relative path which works in both Docker (WORKDIR /app) and Render (WORKDIR /opt/render/project/src)
+METRICS_PATH = os.path.join(os.getcwd(), "ml/artifacts/metrics.json")
 
 # Helper to load metrics with robust error handling
 def load_metrics():
