@@ -1,3 +1,4 @@
+services:
   # ---------------------------------------------------
   # 🌞 BACKEND API (FastAPI) [FREE TIER]
   # ---------------------------------------------------
@@ -40,11 +41,6 @@
     buildCommand: pip install -r streamlit/requirements.txt
     startCommand: streamlit run streamlit/app.py --server.port $PORT --server.address 0.0.0.0
     envVars:
-      - key: BACKEND_URL
-        fromService:
-          type: web
-          name: solarsight-api
-          property: host
       - key: BACKEND_URL
         fromService:
           type: web
