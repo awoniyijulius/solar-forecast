@@ -120,7 +120,7 @@ const App: React.FC = () => {
             <div>
               <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mb-8">Dev Console</h4>
               <a
-                href="http://localhost:8502"
+                href="https://solarsight-admin.onrender.com"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center space-x-2 text-green-500 hover:text-green-400 transition-colors text-sm font-bold"
