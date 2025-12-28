@@ -1,0 +1,91 @@
+services:
+  # ---------------------------------------------------
+  # 🌞 BACKEND API (FastAPI)
+  # ---------------------------------------------------
+  - type: web
+    name: solarsight-api
+    env: python
+    region: oregon
+    plan: free
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: cd backend && uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.3
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: solarsight-redis
+          property: connectionString
+      - key: MODEL_PATH
+        value: /opt/render/project/src/ml/artifacts/lightgbm_model.joblib
+
+  # ---------------------------------------------------
+  # 🎨 FRONTEND (React + Vite)
+  # ---------------------------------------------------
+  - type: static
+    name: solarsight-frontend
+    env: static
+    region: oregon
+    buildCommand: cd frontend && npm install && npm run build
+    publishDir: frontend/dist
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          type: web
+          name: solarsight-api
+          property: url
+
+  # ---------------------------------------------------
+  # 🛡️ ADMIN DASHBOARD (Streamlit)
+  # ---------------------------------------------------
+  - type: web
+    name: solarsight-admin
+    env: python
+    region: oregon
+    plan: free
+    buildCommand: pip install -r streamlit/requirements.txt
+    startCommand: streamlit run streamlit/app.py --server.port $PORT --server.address 0.0.0.0
+    envVars:
+      - key: BACKEND_URL
+        fromService:
+          type: web
+          name: solarsight-api
+          property: url
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: solarsight-redis
+          property: connectionString
+
+  # ---------------------------------------------------
+  # 🧠 PRECOMPUTE JOB (Cron)
+  # ---------------------------------------------------
+  - type: cron
+    name: solarsight-precompute
+    env: python
+    region: oregon
+    schedule: "*/15 * * * *"  # Run every 15 minutes
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: cd backend && python -m app.jobs.precompute
+    envVars:
+      - key: BACKEND_URL
+        fromService:
+          type: web
+          name: solarsight-api
+          property: url
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: solarsight-redis
+          property: connectionString
+
+
+  # ---------------------------------------------------
+  # 💾 REDIS CACHE
+  # ---------------------------------------------------
+  - type: redis
+    name: solarsight-redis
+    region: oregon
+    plan: free
+    ipAllowList: [] # Only allow internal connections
