@@ -24,12 +24,24 @@ app.include_router(admin.router, tags=["Admin"])
 
 @app.get("/")
 async def root():
+    from app.services.cache import CacheClient
+    cache = CacheClient()
+    hits = cache.get("system_impressions") or 0
     return {
         "service": "solar-sight-backend",
         "status": "ok",
-        "version": "0.1.0",
-        "docs": "/docs"
+        "total_impressions": hits,
+        "version": "1.1.0"
     }
+
+@app.post("/api/analytics/hit")
+async def track_impression():
+    from app.services.cache import CacheClient
+    cache = CacheClient()
+    current = cache.get("system_impressions") or 0
+    new_total = current + 1
+    cache.set("system_impressions", new_total, ttl=None) # Persistent
+    return {"status": "recorded", "count": new_total}
 
 @app.on_event("startup")
 async def startup_event():

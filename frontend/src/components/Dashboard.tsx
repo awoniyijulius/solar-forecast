@@ -66,6 +66,18 @@ const Dashboard: React.FC = () => {
   }, [location]);
 
   useEffect(() => {
+    // Analytics: Record impression on mount
+    const trackHit = async () => {
+      try {
+        let apiUrl = import.meta.env.VITE_API_URL || '';
+        if (apiUrl && !apiUrl.startsWith('http')) {
+          apiUrl = `https://${apiUrl}`;
+        }
+        await axios.post(`${apiUrl}/api/analytics/hit`);
+      } catch (e) { /* silent fail for analytics */ }
+    };
+    trackHit();
+
     fetchData();
     const interval = setInterval(fetchData, 15 * 60 * 1000); // 15 min refresh
     return () => clearInterval(interval);

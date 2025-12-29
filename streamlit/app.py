@@ -79,7 +79,11 @@ if page == "Executive Summary":
     col1, col2, col3, col4 = st.columns(4)
     
     with col1:
-        st.metric("Global Nodes", "10 Cities", delta="Production Ready", delta_color="normal")
+        try:
+            r = requests.get(f"{BACKEND_URL}/")
+            impressions = r.json().get("total_impressions", "0")
+        except: impressions = "..."
+        st.metric("Total Impressions", f"{impressions}", delta="Organic Traffic", delta_color="normal")
     with col2:
         # PULL ACTUAL R2 FROM ARTIFACTS
         r2 = metrics_data['validation']['r2'] if metrics_data else 0.9566
