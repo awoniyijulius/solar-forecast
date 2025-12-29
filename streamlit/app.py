@@ -9,10 +9,48 @@ from datetime import datetime
 
 st.set_page_config(page_title="SolarSight Admin | Metrics & Controls", layout="wide")
 
-# Paths and Config
+# Authentication
+ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "admin123")
+
+def check_password():
+    """Returns `True` if the user had the correct password."""
+    if "authenticated" not in st.session_state:
+        st.session_state["authenticated"] = False
+
+    if st.session_state["authenticated"]:
+        return True
+
+    # Show login form
+    st.markdown("""
+        <style>
+        .login-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 2rem;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+        </style>
+    """, unsafe_allow_html=True)
+    
+    st.title("🛡️ Secure Access Required")
+    st.info("SolarSight Developer Hub is restricted to authorized engineers.")
+    
+    with st.container():
+        pwd = st.text_input("Enter Infrastructure Access Key", type="password")
+        if st.button("Unlock Console"):
+            if pwd == ADMIN_PASSWORD:
+                st.session_state["authenticated"] = True
+                st.rerun()
+            else:
+                st.error("Invalid Access Key. IP Logged.")
+    return False
+
+if not check_password():
+    st.stop() # Prevents any further code from running
+
 # Paths and Config
 BACKEND_URL = os.environ.get("BACKEND_URL", "http://backend:8000").rstrip("/")
-# Use relative path which works in both Docker (WORKDIR /app) and Render (WORKDIR /opt/render/project/src)
 METRICS_PATH = os.path.join(os.getcwd(), "ml/artifacts/metrics.json")
 
 # Helper to load metrics with robust error handling
