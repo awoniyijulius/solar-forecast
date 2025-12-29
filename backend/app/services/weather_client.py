@@ -13,7 +13,7 @@ async def fetch_hourly_forecast(lat: float, lon: float, hours: int = 48) -> Dict
         "forecast_days": 3,
         "timezone": "auto"
     }
-    async with httpx.AsyncClient(timeout=20.0) as client:
+    async with httpx.AsyncClient(timeout=20.0, verify=False) as client:
         r = await client.get(OPEN_METEO_URL, params=params)
         r.raise_for_status()
         return r.json()
