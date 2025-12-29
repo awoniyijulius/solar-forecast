@@ -10,8 +10,8 @@ from datetime import datetime
 st.set_page_config(page_title="SolarSight Admin | Metrics & Controls", layout="wide")
 
 # Paths and Config
-BACKEND_HOST = os.environ.get("BACKEND_URL", "backend:8000").replace("http://", "").replace("https://", "")
-BACKEND_URL = f"http://{BACKEND_HOST}"
+# Paths and Config
+BACKEND_URL = os.environ.get("BACKEND_URL", "http://backend:8000").rstrip("/")
 # Use relative path which works in both Docker (WORKDIR /app) and Render (WORKDIR /opt/render/project/src)
 METRICS_PATH = os.path.join(os.getcwd(), "ml/artifacts/metrics.json")
 
