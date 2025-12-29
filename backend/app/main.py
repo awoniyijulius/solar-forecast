@@ -48,16 +48,17 @@ async def startup_event():
     except Exception as e:
         print(f"⚠️ Cache init warning: {e}")
     
-    # 2. Run initial precompute immediately (non-blocking if possible, but for v1 blocking is safer to ensure data exists)
-    print("🔄 Running initial precompute job...")
-    try:
-        await precompute.run_precompute()
-        print("✅ Initial precompute complete")
-    except Exception as e:
-        print(f"❌ Initial precompute failed: {e}")
+    # 2. Start Background Loop (Immediate + Scheduled)
+    async def run_scheduler():
+        # Delay slightly to let server start serving requests
+        await asyncio.sleep(5)
+        print("🔄 Running initial precompute job (Background)...")
+        try:
+            await precompute.run_precompute()
+            print("✅ Initial precompute complete")
+        except Exception as e:
+             print(f"❌ Initial precompute failed: {e}")
 
-    # 3. Start Background Loop for 15-min updates
-    async def schedule_precompute():
         while True:
             await asyncio.sleep(900) # 15 minutes
             print("⏰ Triggering scheduled precompute...")
@@ -66,6 +67,6 @@ async def startup_event():
             except Exception as e:
                 print(f"❌ Scheduled precompute failed: {e}")
 
-    asyncio.create_task(schedule_precompute())
+    asyncio.create_task(run_scheduler())
     
     print("🚀 SolarSight Backend started successfully")
