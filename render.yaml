@@ -41,6 +41,8 @@ services:
     buildCommand: pip install -r streamlit/requirements.txt
     startCommand: streamlit run streamlit/app.py --server.port $PORT --server.address 0.0.0.0
     envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.3
       - key: BACKEND_URL
         fromService:
           type: web
