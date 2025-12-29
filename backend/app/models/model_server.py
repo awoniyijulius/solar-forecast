@@ -44,13 +44,19 @@ class ModelServer:
                 if "ghi_roll3" not in X.columns:
                     X["ghi_roll3"] = X["ghi"].rolling(3, min_periods=1).mean()
 
-                for col in req_cols:
-                    if col not in X.columns:
-                        X[col] = 0
-                
-                y_pred = self.model.predict(X[req_cols])
-                y_pred = np.maximum(0, y_pred)
-            else:
+                try:
+                    for col in req_cols:
+                        if col not in X.columns:
+                            X[col] = 0
+                    
+                    y_pred = self.model.predict(X[req_cols])
+                    y_pred = np.maximum(0, y_pred)
+                except Exception as model_err:
+                    print(f"⚠️ Model prediction failed ({model_err}), switching to Heuristic Fallback")
+                    # Fallthrough to heuristic
+                    self.model = None 
+            
+            if not self.model: # Check again in case we fell back
                 # Heuristic fallback
                 rad = df["radiation"] if rad_col else np.zeros(len(df))
                 cloud = df["cloudcover"] if "cloudcover" in df.columns else np.zeros(len(df))
