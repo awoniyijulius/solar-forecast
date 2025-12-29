@@ -98,5 +98,9 @@ async def scheduler():
         print(f"[{datetime.utcnow().isoformat()}] ⏳ Sleeping {sleep_sec}s")
         await asyncio.sleep(sleep_sec)
 
+
+# Alias for external import
+run_precompute = run_precompute_cycle
+
 if __name__ == "__main__":
     asyncio.run(scheduler())
