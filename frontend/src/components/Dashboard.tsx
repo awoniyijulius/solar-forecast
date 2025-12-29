@@ -105,8 +105,11 @@ const Dashboard: React.FC = () => {
       ) : error ? (
         <div className="glass-card border-red-500/20 bg-red-500/5 p-10 rounded-3xl text-center">
           <span className="text-4xl mb-4 block">⚠️</span>
-          <h3 className="text-xl font-bold text-white mb-2">Service Temporarily Unavailable</h3>
-          <p className="text-red-400 max-w-md mx-auto mb-6">{error}</p>
+          <h3 className="text-xl font-bold text-white mb-2">Connection Error</h3>
+          <p className="text-red-400 max-w-md mx-auto mb-2">{error}</p>
+          <p className="text-[10px] text-slate-500 font-mono mb-6 bg-black/20 p-2 rounded">
+            Target: {import.meta.env.VITE_API_URL ? `https://${import.meta.env.VITE_API_URL}/api/predictions/${location}` : `(Localhost)/api/predictions/${location}`}
+          </p>
           <button onClick={fetchData} className="bg-red-600 text-white px-8 py-3 rounded-2xl font-bold hover:bg-red-700 transition-all">
             Retry Connection
           </button>
