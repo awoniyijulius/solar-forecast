@@ -33,47 +33,47 @@ def load_cities() -> List[Dict[str, Any]]:
             pass
     return DEFAULT_CITIES
 
-async def precompute_city(ms: ModelServer, cch: cache.CacheClient, city: Dict[str, Any], ttl: int) -> None:
+async def generate_city_prediction(ms: ModelServer, city: Dict[str, Any]) -> Dict[str, Any]:
     name = city["name"]
     lat = city["lat"]
     lon = city["lon"]
-    try:
-        fc_json = await weather_client.fetch_hourly_forecast(lat, lon, hours=48)
-        feats_df = feature_builder.build_features(fc_json)
-        pred = ms.predict_24h(feats_df)
-        
-        co2_per_hour = [float(co2.co2_avoided_kgs(float(k))) for k in pred.get("pred_kwh", [])]
-        co2_total_24h = float(sum(co2_per_hour[:24]))
-        
-        # Explicit conversion to ensure NO non-serializable objects
-        clean_hours = []
-        for h in pred.get("hours", []):
-            if hasattr(h, 'isoformat'):
-                clean_hours.append(h.isoformat())
-            else:
-                clean_hours.append(str(h))
+    
+    fc_json = await weather_client.fetch_hourly_forecast(lat, lon, hours=48)
+    feats_df = feature_builder.build_features(fc_json)
+    pred = ms.predict_24h(feats_df)
+    
+    co2_per_hour = [float(co2.co2_avoided_kgs(float(k))) for k in pred.get("pred_kwh", [])]
+    co2_total_24h = float(sum(co2_per_hour[:24]))
+    
+    # Explicit conversion to ensure NO non-serializable objects
+    clean_hours = []
+    for h in pred.get("hours", []):
+        if hasattr(h, 'isoformat'):
+            clean_hours.append(h.isoformat())
+        else:
+            clean_hours.append(str(h))
 
-        payload = {
-            "location": str(name),
-            "generated_at_utc": datetime.utcnow().isoformat() + "Z",
-            "timezone": fc_json.get("timezone", "UTC"),
-            "timezone_abbr": fc_json.get("timezone_abbreviation", "UTC"),
-            "hours": clean_hours,
-            "pred_kwh": [float(x) for x in pred.get("pred_kwh", [])],
-            "confidence": [float(x) for x in pred.get("confidence", [])],
-            "co2_kg_per_hour": [float(x) for x in co2_per_hour],
-            "co2_kg_total": float(co2_total_24h)
-        }
-        
+    payload = {
+        "location": str(name),
+        "generated_at_utc": datetime.utcnow().isoformat() + "Z",
+        "timezone": fc_json.get("timezone", "UTC"),
+        "timezone_abbr": fc_json.get("timezone_abbreviation", "UTC"),
+        "hours": clean_hours,
+        "pred_kwh": [float(x) for x in pred.get("pred_kwh", [])],
+        "confidence": [float(x) for x in pred.get("confidence", [])],
+        "co2_kg_per_hour": [float(x) for x in co2_per_hour],
+        "co2_kg_total": float(co2_total_24h)
+    }
+    return payload
+
+async def precompute_city(ms: ModelServer, cch: cache.CacheClient, city: Dict[str, Any], ttl: int) -> None:
+    name = city["name"]
+    try:
+        payload = await generate_city_prediction(ms, city)
         cch.set(name, payload, ttl=ttl)
-        print(f"[{datetime.utcnow().isoformat()}] ✅ {name.upper()} | CO2: {co2_total_24h:.2f}kg")
+        print(f"[{datetime.utcnow().isoformat()}] ✅ {name.upper()} | CO2: {payload['co2_kg_total']:.2f}kg")
     except Exception as e:
         print(f"[{datetime.utcnow().isoformat()}] ❌ {name}: {e}")
-        # Log specific type info if it's a serialization error
-        if "JSON" in str(e):
-            try:
-                print(f"DEBUG {name} hours[0] type: {type(pred.get('hours', [])[0])}")
-            except: pass
 
 async def run_precompute_cycle():
     cities = load_cities()
