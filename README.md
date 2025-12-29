@@ -40,8 +40,17 @@ Real-time solar energy prediction platform with 24-hour hourly forecasts, carbon
 │  2. Run inference (LightGBM Model)                      │
 │  3. Calculate CO₂ avoided                               │
 │  4. Cache results → Redis + DB                          │
-└─────────────────────────────────────────────────────────┘
 ```
+
+## 🚀 Cloud Deployment (Zero-Cost Architecture)
+
+The platform is deployed on **Render Free Tier** using a highly optimized "Zero-Cost" blueprint:
+- **Core Engine**: FastAPI Backend with `DiskCache` (No external Redis required).
+- **Frontend**: React + Vite (Static Site).
+- **Admin Hub**: Streamlit (Python Service).
+- **Automation**: AsyncIO Background Loop for data precomputation (No external Cron required).
+
+**[👉 View Live Demo](https://solarsight-frontend.onrender.com)**
 
 ## Quick Start
 
