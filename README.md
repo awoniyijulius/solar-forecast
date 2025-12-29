@@ -42,7 +42,7 @@ Real-time solar energy prediction platform with 24-hour hourly forecasts, carbon
 │  4. Cache results → Redis + DB                          │
 ```
 
-## 🚀 Cloud Deployment (Zero-Cost Architecture)
+##  Cloud Deployment (Zero-Cost Architecture)
 
 The platform is deployed on **Render Free Tier** using a highly optimized "Zero-Cost" blueprint:
 - **Core Engine**: FastAPI Backend with `DiskCache` (No external Redis required).

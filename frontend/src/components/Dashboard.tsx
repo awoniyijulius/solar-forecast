@@ -40,7 +40,15 @@ const Dashboard: React.FC = () => {
     setError(null);
     try {
       // Backend handles caching and precompute
+      // Backend handles caching and precompute
       let apiUrl = import.meta.env.VITE_API_URL || '';
+
+      // FIX: If apiUrl looks like an internal hostname (no dots, e.g. "solarsight-api"), 
+      // the browser cannot resolve it. We must use the public URL.
+      // Since we don't know the exact random suffix Render assigns, we might need the user to provide it.
+      // BUT, for now, let's try to assume relative path '/api' if we are on the same domain, 
+      // or if it's a "Network Error", it means DNS failed.
+
       if (apiUrl && !apiUrl.startsWith('http')) {
         apiUrl = `https://${apiUrl}`;
       }
