@@ -43,8 +43,8 @@ services:
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.3
-      - key: BACKEND_URL
-        fromService:
-          type: web
-          name: solarsight-api
-          property: host
+      # - key: BACKEND_URL
+      #   fromService:
+      #     type: web
+      #     name: solarsight-api
+      #     property: host
