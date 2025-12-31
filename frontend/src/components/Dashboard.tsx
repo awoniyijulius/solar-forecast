@@ -50,7 +50,8 @@ const Dashboard: React.FC = () => {
       setData(response.data);
     } catch (err: any) {
       if (err.response?.status === 503) {
-        setError("Inference pending... The system is warming up its models for this location. Please refresh in a minute.");
+        const detail = err.response.data?.detail || "Inference pending... The system is warming up its models for this location.";
+        setError(detail);
       } else {
         setError(err.message || "Failed to fetch prediction data.");
       }
@@ -123,7 +124,14 @@ const Dashboard: React.FC = () => {
           <h3 className="text-xl font-bold text-white mb-2">Connection Error</h3>
           <p className="text-red-400 max-w-md mx-auto mb-2">{error}</p>
           <p className="text-[10px] text-slate-500 font-mono mb-6 bg-black/20 p-2 rounded">
-            Target: {import.meta.env.VITE_API_URL ? `https://${import.meta.env.VITE_API_URL}/api/predictions/${location}` : `(Localhost)/api/predictions/${location}`}
+            Target: {(() => {
+              const meta = (import.meta as any).env;
+              let url = meta.VITE_API_URL || '(Localhost)';
+              if (url !== '(Localhost)' && !url.startsWith('http')) {
+                url = `https://${url}`;
+              }
+              return `${url}/api/predictions/${location}`;
+            })()}
           </p>
           <button onClick={fetchData} className="bg-red-600 text-white px-8 py-3 rounded-2xl font-bold hover:bg-red-700 transition-all">
             Retry Connection
