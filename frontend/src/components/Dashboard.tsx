@@ -49,9 +49,13 @@ const Dashboard: React.FC = () => {
       const response = await axios.get(`${apiUrl}/api/predictions/${location}`);
       setData(response.data);
     } catch (err: any) {
-      if (err.response?.status === 503) {
-        const detail = err.response.data?.detail || "Inference pending... The system is warming up its models for this location.";
-        setError(detail);
+      const status = err.response?.status;
+      const detail = err.response?.data?.detail;
+
+      if (status === 503) {
+        setError(detail || "Inference pending... The system is warming up its models for this location.");
+      } else if (status === 429) {
+        setError(detail || "The weather data provider is temporarily busy. Please try again shortly.");
       } else {
         setError(err.message || "Failed to fetch prediction data.");
       }
