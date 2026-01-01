@@ -40,5 +40,17 @@ async def get_predictions(location: str):
         return payload
     except Exception as e:
         print(f"❌ On-demand inference failed: {e}")
-        # fallback: return 503 if we absolutely can't generate data
-        raise HTTPException(status_code=503, detail=f"Prediction unavailable: {str(e)}")
+        
+        # Check if it's a rate limit error
+        error_msg = str(e)
+        status_code = 503
+        
+        if "429" in error_msg or "rate limit" in error_msg.lower():
+            error_msg = "The weather data provider is temporarily busy. Please try again in 30 seconds."
+            status_code = 429
+            
+        # fallback: return 503 or 429
+        raise HTTPException(
+            status_code=status_code, 
+            detail=error_msg
+        )

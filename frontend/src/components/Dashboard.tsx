@@ -119,23 +119,39 @@ const Dashboard: React.FC = () => {
           <p className="text-slate-400 font-medium tracking-wide">Synthesizing forecast models...</p>
         </div>
       ) : error ? (
-        <div className="glass-card border-red-500/20 bg-red-500/5 p-10 rounded-3xl text-center">
-          <span className="text-4xl mb-4 block">⚠️</span>
-          <h3 className="text-xl font-bold text-white mb-2">Connection Error</h3>
-          <p className="text-red-400 max-w-md mx-auto mb-2">{error}</p>
-          <p className="text-[10px] text-slate-500 font-mono mb-6 bg-black/20 p-2 rounded">
-            Target: {(() => {
-              const meta = (import.meta as any).env;
-              let url = meta.VITE_API_URL || '(Localhost)';
-              if (url !== '(Localhost)' && !url.startsWith('http')) {
-                url = `https://${url}`;
-              }
-              return `${url}/api/predictions/${location}`;
-            })()}
+        <div className="glass-card border-amber-500/20 bg-amber-500/5 p-12 rounded-[32px] text-center animate-fade-in">
+          <div className="w-20 h-20 bg-amber-500/10 rounded-3xl flex items-center justify-center mx-auto mb-6 border border-amber-500/20">
+            <span className="text-4xl">⏳</span>
+          </div>
+          <h3 className="text-2xl font-black text-white mb-3">Service Temporarily Saturated</h3>
+          <p className="text-slate-400 max-w-md mx-auto mb-8 font-medium leading-relaxed">
+            {error.includes("429") || error.includes("busy")
+              ? "The high volume of global requests has temporarily throttled our weather data stream. We are recalibrating for your region."
+              : error}
           </p>
-          <button onClick={fetchData} className="bg-red-600 text-white px-8 py-3 rounded-2xl font-bold hover:bg-red-700 transition-all">
-            Retry Connection
-          </button>
+
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <button
+              onClick={fetchData}
+              className="bg-green-600 hover:bg-green-500 text-white px-10 py-4 rounded-2xl font-black transition-all shadow-lg shadow-green-600/20 flex items-center group"
+            >
+              <span className="mr-2 group-hover:rotate-180 transition-transform duration-500">🔄</span>
+              Attempt Reconnection
+            </button>
+            <button
+              onClick={() => window.location.reload()}
+              className="px-8 py-4 rounded-2xl font-bold text-slate-400 hover:text-white transition-all"
+            >
+              Refresh Application
+            </button>
+          </div>
+
+          <div className="mt-10 pt-8 border-t border-white/5">
+            <p className="text-[10px] text-slate-500 font-bold uppercase tracking-[0.2em] mb-4">Diagnostic Context</p>
+            <code className="text-[10px] text-amber-500/70 font-mono bg-black/40 px-4 py-2 rounded-xl border border-white/5">
+              {location.toUpperCase()} | STATUS_{error.includes("429") ? "429_LIMIT_THROTTLED" : "SERVICE_UNAVAILABLE"}
+            </code>
+          </div>
         </div>
       ) : data ? (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
