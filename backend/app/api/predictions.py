@@ -1,5 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from typing import Dict, Any
+import asyncio
 from app.services import weather_client, feature_builder, co2
 from app.models.model_server import ModelServer
 from app.services.cache import CacheClient
