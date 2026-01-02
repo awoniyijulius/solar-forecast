@@ -81,14 +81,15 @@ async def run_precompute_cycle():
     model_path = os.environ.get("MODEL_PATH", "./ml/artifacts/lightgbm_model.joblib")
     ms = ModelServer(model_path)
     cch = cache.CacheClient()
-    semaphore = asyncio.Semaphore(3) # Reduce concurrency to avoid rate limits
     
-    async def sem_task(city):
-        async with semaphore:
-            await precompute_city(ms, cch, city, ttl)
-            
-    tasks = [sem_task(city) for city in cities]
-    await asyncio.gather(*tasks)
+    # Process cities one by one to avoid triggering rate limits on the free tier
+    print(f"🔄 Starting sequential precompute for {len(cities)} cities...")
+    for city in cities:
+        await precompute_city(ms, cch, city, ttl)
+        # Add a small delay between cities to be ultra-safe
+        await asyncio.sleep(2)
+    
+    print("✅ All cities precomputed.")
 
 async def scheduler():
     while True:
