@@ -69,6 +69,22 @@ async def generate_city_prediction(ms: ModelServer, city: Dict[str, Any]) -> Dic
 async def precompute_city(ms: ModelServer, cch: cache.CacheClient, city: Dict[str, Any], ttl: int) -> None:
     name = city["name"]
     try:
+        # 🛡️ DEBOUNCER: Avoid hitting API if we already have fresh data (< 12 mins old)
+        # This prevents redundant hits when the app restarts/redeploys
+        existing = cch.get(name)
+        if existing and "generated_at_utc" in existing:
+            try:
+                # Remove Z and handle ISO format
+                ts = existing["generated_at_utc"].replace("Z", "")
+                last_gen = datetime.fromisoformat(ts)
+                age_sec = (datetime.utcnow() - last_gen).total_seconds()
+                
+                if age_sec < 720: # 12 minutes
+                    print(f"[{datetime.utcnow().isoformat()}] ⏩ {name.upper()} | Cache is fresh ({age_sec:.0f}s old). Skipping API hit.")
+                    return
+            except Exception:
+                pass # If parsing fails, proceed to refresh
+
         payload = await generate_city_prediction(ms, city)
         cch.set(name, payload, ttl=ttl)
         print(f"[{datetime.utcnow().isoformat()}] ✅ {name.upper()} | CO2: {payload['co2_kg_total']:.2f}kg")

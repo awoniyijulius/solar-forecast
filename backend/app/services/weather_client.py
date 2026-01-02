@@ -45,6 +45,12 @@ async def fetch_hourly_forecast(lat: float, lon: float, hours: int = 48) -> Dict
     api_key = os.environ.get("OPEN_METEO_API_KEY")
     url = CUSTOMER_URL if api_key else OPEN_METEO_URL
     
+    # Identify our app uniquely to avoid being lumped in with other Render users
+    headers = {
+        "User-Agent": "SolarSightForecastEngine/1.1 (https://solarsight.app)",
+        "Accept": "application/json"
+    }
+    
     params = {
         "latitude": lat,
         "longitude": lon,
@@ -55,17 +61,20 @@ async def fetch_hourly_forecast(lat: float, lon: float, hours: int = 48) -> Dict
     if api_key:
         params["apikey"] = api_key
     
-    max_retries = 3 # Reduced retries because we'll use fallback instead of hanging
-    base_delay = 2
+    max_retries = 3
+    base_delay = 5
     
     for attempt in range(max_retries):
         try:
-            async with httpx.AsyncClient(timeout=15.0, verify=False) as client:
+            async with httpx.AsyncClient(timeout=20.0, verify=False, headers=headers) as client:
                 r = await client.get(url, params=params)
                 
                 if r.status_code == 429:
-                    wait_time = (base_delay ** attempt) + random.uniform(0, 1)
-                    logger.warning(f"⚠️ Rate Limited. Retry {attempt+1}/{max_retries} in {wait_time:.2f}s")
+                    # Look for Retry-After header or use jittered backoff
+                    retry_after = r.headers.get("Retry-After")
+                    wait_time = int(retry_after) if retry_after and retry_after.isdigit() else (base_delay ** attempt) + random.uniform(0, 2)
+                    
+                    logger.warning(f"⚠️ Open-Meteo says wait {wait_time}s. (Attempt {attempt+1}/{max_retries})")
                     await asyncio.sleep(wait_time)
                     continue
                 
@@ -73,7 +82,7 @@ async def fetch_hourly_forecast(lat: float, lon: float, hours: int = 48) -> Dict
                 return r.json()
         except Exception as e:
             if attempt == max_retries - 1:
-                logger.error(f"❌ Weather API failed permanently: {e}. Switching to fallback.")
+                logger.error(f"❌ Weather API failed permanently: {e}. Switching to theoretical model.")
                 return get_theoretical_fallback(lat, lon)
             
             wait_time = (base_delay ** attempt) + random.uniform(0, 1)
