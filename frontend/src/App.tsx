@@ -7,16 +7,16 @@ const App: React.FC = () => {
 
   const infoContent: Record<string, { title: string; body: string }> = {
     forecasting: {
-      title: "AI Forecasting Methodology",
-      body: "Our system utilizes LightGBM (Light Gradient Boosting Machine) to process multi-dimensional weather leads. By analyzing shortwave radiation, cloud cover, and thermal gradients, the AI predicts the precise photon-to-electron conversion potential for each specific geographic coordinate."
+      title: "AI Forecasting Intelligence",
+      body: "Our system utilizes LightGBM to process multi-dimensional weather leads. By analyzing shortwave radiation and thermal gradients, we predict solar potential with sub-meter precision, enabling accurate planning for both energy and agricultural yields."
     },
-    insights: {
-      title: "Global Energy Insights",
-      body: "SolarSight monitors 10 strategic global hubs. We analyze regional grid emission factors to calculate real-time carbon avoidance. Our data shows that optimal solar harvesting peak hours vary significantly by latitude, providing a blueprint for sustainable city planning."
+    sdg: {
+      title: "Multi-SDG Impact Framework",
+      body: "SolarSight maps data to 5 UN Sustainable Development Goals. We go beyond energy (SDG 7) to provide critical health advisories for UV protection (SDG 3) and agricultural drying/irrigation windows (SDG 2), maximizing social impact per watt."
     },
-    methodology: {
-      title: "Technical Stack & Guardrails",
-      body: "Built on a robust Python/React stack with FastAPI and Redis caching. We implement strict physical guardrails: generation is automatically zeroed during astronomical night hours to ensure 100% data integrity and thermodynamic realism."
+    resilience: {
+      title: "Grid-Resilience & Diesel Offset",
+      body: "Built for energy autonomy in any infrastructure. Our engine calculates the direct displacement of backup diesel generators, providing a roadmap for carbon-neutrality and humanitarian energy access in grid-fragile regions."
     }
   };
 
@@ -33,22 +33,22 @@ const App: React.FC = () => {
 
         <div className="hidden md:flex items-center space-x-8 text-xs font-bold text-slate-400 uppercase tracking-widest">
           <button onClick={() => setActiveInfo('forecasting')} className="hover:text-green-400 transition-colors">Forecasting</button>
-          <button onClick={() => setActiveInfo('insights')} className="hover:text-green-400 transition-colors">Global Insights</button>
-          <button onClick={() => setActiveInfo('methodology')} className="hover:text-green-400 transition-colors">Methodology</button>
+          <button onClick={() => setActiveInfo('sdg')} className="hover:text-green-400 transition-colors">SDG Impact</button>
+          <button onClick={() => setActiveInfo('resilience')} className="hover:text-green-400 transition-colors">Resilience Hub</button>
         </div>
       </nav>
 
       <main className="container mx-auto px-6 py-12">
         <header className="mb-16 max-w-4xl animate-fade-up">
           <h2 className="text-5xl md:text-6xl font-extrabold text-white mb-8 leading-[1.05] tracking-tight">
-            Advancing the Global <br />
-            <span className="text-green-500">Energy Transition.</span>
+            Intelligence for a <br />
+            <span className="text-green-500">Resilient Future.</span>
           </h2>
           <p className="text-xl text-slate-400 font-medium leading-relaxed max-w-3xl">
-            SolarSight integrates high-resolution satellite irradiance telemetry with advanced LightGBM
-            gradient boosting to deliver sub-meter precision in solar yield forecasting.
-            Our multi-tier data pipeline empowers residential energy autonomy, institutional ESG compliance,
-            and the engineering of carbon-neutral, grid-resilient municipal infrastructures.
+            SolarSight combines satellite telemetry with gradient boosting to deliver high-precision
+            yield intelligence. By bridging the gap between renewable energy, dermatological health,
+            and agricultural security, we empower communities to leapfrog grid-fragility towards
+            a sustainable, multi-dimensional energy transition.
           </p>
         </header>
 
