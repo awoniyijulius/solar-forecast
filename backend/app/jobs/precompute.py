@@ -42,7 +42,8 @@ async def generate_city_prediction(ms: ModelServer, city: Dict[str, Any]) -> Dic
     feats_df = feature_builder.build_features(fc_json)
     pred = ms.predict_24h(feats_df)
     
-    co2_per_hour = [float(co2.co2_avoided_kgs(float(k))) for k in pred.get("pred_kwh", [])]
+    # NEW: Using regional intensity factors for climate impact accuracy
+    co2_per_hour = [float(co2.co2_avoided_kgs(float(k), name)) for k in pred.get("pred_kwh", [])]
     co2_total_24h = float(sum(co2_per_hour[:24]))
     
     # Explicit conversion to ensure NO non-serializable objects

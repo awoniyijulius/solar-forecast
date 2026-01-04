@@ -92,7 +92,7 @@ const InsightCard: React.FC<InsightCardProps> = ({ totalCo2, predictions, hours,
         </div>
       </div>
 
-      {/* 💰 FINANCIAL ROI PROJECTION (NEW) */}
+      {/* 💰 FINANCIAL ROI PROJECTION */}
       <div className="glass-card p-8 rounded-[32px] border-amber-500/20 bg-gradient-to-br from-amber-500/5 to-transparent">
         <h3 className="text-[10px] font-black text-amber-500 uppercase tracking-[0.4em] mb-8">Financial ROI Estimate</h3>
         <div className="flex justify-between items-end">
@@ -108,6 +108,33 @@ const InsightCard: React.FC<InsightCardProps> = ({ totalCo2, predictions, hours,
           </div>
         </div>
         <p className="text-[9px] font-bold text-slate-500 mt-4 italic">Based on local avg tariff of {currency}{rate}/kWh</p>
+      </div>
+
+      {/* 🛡️ CLIMATE RESILIENCE & SOCIAL IMPACT (NEW) */}
+      <div className="glass-card p-8 rounded-[32px] border-blue-500/20 bg-gradient-to-br from-blue-500/5 to-transparent">
+        <h3 className="text-[10px] font-black text-blue-500 uppercase tracking-[0.4em] mb-8">Resilience & Social Impact</h3>
+        <div className="flex items-center space-x-6">
+          <div className="bg-blue-500/20 p-4 rounded-3xl text-3xl">🛢️</div>
+          <div>
+            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Estimated Diesel Avoidance</p>
+            <p className="text-2xl font-black text-white">
+              {(dailyTotalKwh / 2.5).toFixed(1)} <span className="text-xs text-blue-400">Liters / Day</span>
+            </p>
+            <p className="text-[9px] font-bold text-slate-500 mt-1">
+              Equivalent to ~{(dailyTotalKwh / 5).toFixed(1)} hours of backup generator run-time
+            </p>
+          </div>
+        </div>
+        <div className="mt-6 pt-6 border-t border-white/5 grid grid-cols-2 gap-4">
+          <div>
+            <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Energy Access</p>
+            <p className="text-xs font-bold text-white">{(dailyTotalKwh * 1.5).toFixed(0)} Home-Hours</p>
+          </div>
+          <div className="text-right">
+            <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Social KPI</p>
+            <p className="text-xs font-bold text-white">Low-Carbon Transition</p>
+          </div>
+        </div>
       </div>
 
       {/* 📡 ASSET TELEMETRY & REVENUE METERING */}
