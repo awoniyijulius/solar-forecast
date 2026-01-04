@@ -6,9 +6,20 @@ interface InsightCardProps {
   hours: string[];
   currency?: string;
   rate?: number;
+  // NEW: Health & Agricultural Metrics
+  peakUv?: number;
+  peakUvHour?: number;
+  uvRiskLevel?: string;
+  safeSunExposureMins?: number;
+  agriDryingWindows?: number[];
+  agriIrrigationAdvice?: string;
 }
 
-const InsightCard: React.FC<InsightCardProps> = ({ totalCo2, predictions, hours, currency = '$', rate = 0.15 }) => {
+const InsightCard: React.FC<InsightCardProps> = ({
+  totalCo2, predictions, hours, currency = '$', rate = 0.15,
+  peakUv = 0, peakUvHour = 12, uvRiskLevel = 'Moderate', safeSunExposureMins = 30,
+  agriDryingWindows = [], agriIrrigationAdvice = 'Morning'
+}) => {
   const SYSTEM_PEAK_CAPACITY_KW = 10.0;
 
   // Ensure we are calculating for a single 24-hour cycle for daily impact metrics
@@ -134,6 +145,66 @@ const InsightCard: React.FC<InsightCardProps> = ({ totalCo2, predictions, hours,
             <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Social KPI</p>
             <p className="text-xs font-bold text-white">Low-Carbon Transition</p>
           </div>
+        </div>
+      </div>
+
+      {/* ☀️ UV HEALTH ADVISORY (SDG 3: Good Health) */}
+      <div className="glass-card p-8 rounded-[32px] border-rose-500/20 bg-gradient-to-br from-rose-500/5 to-transparent">
+        <h3 className="text-[10px] font-black text-rose-500 uppercase tracking-[0.4em] mb-6">Dermatological Advisory</h3>
+        <div className="flex items-center space-x-6">
+          <div className={`p-4 rounded-3xl text-3xl ${uvRiskLevel === 'Extreme' || uvRiskLevel === 'Very High' ? 'bg-red-500/20' :
+              uvRiskLevel === 'High' ? 'bg-orange-500/20' : 'bg-yellow-500/20'
+            }`}>☀️</div>
+          <div>
+            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Peak UV Index</p>
+            <p className="text-2xl font-black text-white">
+              {peakUv.toFixed(1)} <span className={`text-sm ${uvRiskLevel === 'Extreme' || uvRiskLevel === 'Very High' ? 'text-red-400' :
+                  uvRiskLevel === 'High' ? 'text-orange-400' : 'text-yellow-400'
+                }`}>({uvRiskLevel})</span>
+            </p>
+            <p className="text-[9px] font-bold text-slate-500 mt-1">
+              Peak occurs at ~{peakUvHour}:00 local time
+            </p>
+          </div>
+        </div>
+        <div className="mt-6 pt-6 border-t border-white/5">
+          <div className="flex justify-between items-center">
+            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Safe Unprotected Exposure</p>
+            <p className="text-lg font-black text-rose-400">{safeSunExposureMins} mins</p>
+          </div>
+          <p className="text-[9px] font-bold text-slate-500 mt-2 italic">
+            SPF 30+ recommended for outdoor workers during peak hours. (SDG 3: Good Health)
+          </p>
+        </div>
+      </div>
+
+      {/* 🌾 AGRICULTURAL ADVISORY (SDG 2: Zero Hunger) */}
+      <div className="glass-card p-8 rounded-[32px] border-emerald-500/20 bg-gradient-to-br from-emerald-500/5 to-transparent">
+        <h3 className="text-[10px] font-black text-emerald-500 uppercase tracking-[0.4em] mb-6">Agricultural Intelligence</h3>
+        <div className="grid grid-cols-2 gap-6">
+          <div>
+            <div className="flex items-center space-x-3 mb-3">
+              <span className="text-2xl">🌾</span>
+              <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Crop Drying Windows</p>
+            </div>
+            <p className="text-xs font-bold text-white">
+              {agriDryingWindows.length > 0
+                ? `${agriDryingWindows.length} optimal hours today (${agriDryingWindows.slice(0, 3).map(h => `${h}:00`).join(', ')}${agriDryingWindows.length > 3 ? '...' : ''})`
+                : 'No ideal windows - expect cloud cover'}
+            </p>
+          </div>
+          <div>
+            <div className="flex items-center space-x-3 mb-3">
+              <span className="text-2xl">💧</span>
+              <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Irrigation Timing</p>
+            </div>
+            <p className="text-xs font-bold text-white">{agriIrrigationAdvice}</p>
+          </div>
+        </div>
+        <div className="mt-6 pt-6 border-t border-white/5">
+          <p className="text-[9px] font-bold text-slate-500 italic">
+            Solar-powered irrigation pumps will have peak efficiency during identified drying windows. (SDG 2: Zero Hunger)
+          </p>
         </div>
       </div>
 

@@ -54,6 +54,47 @@ async def generate_city_prediction(ms: ModelServer, city: Dict[str, Any]) -> Dic
         else:
             clean_hours.append(str(h))
 
+    # --- NEW: UV Health & Agricultural Metrics ---
+    hourly = fc_json.get("hourly", {})
+    uv_data = hourly.get("uv_index", [0] * 48)
+    cloud_data = hourly.get("cloudcover", [50] * 48)
+    temp_data = hourly.get("temperature_2m", [25] * 48)
+    radiation_data = hourly.get("shortwave_radiation", [0] * 48)
+    
+    # Peak UV calculation (first 24 hours)
+    uv_24h = uv_data[:24] if len(uv_data) >= 24 else uv_data
+    peak_uv = max(uv_24h) if uv_24h else 0
+    peak_uv_hour = uv_24h.index(peak_uv) if uv_24h and peak_uv > 0 else 12
+    
+    # UV Risk Classification (WHO Standard)
+    if peak_uv >= 11:
+        uv_risk = "Extreme"
+        safe_exposure_mins = 10
+    elif peak_uv >= 8:
+        uv_risk = "Very High"
+        safe_exposure_mins = 15
+    elif peak_uv >= 6:
+        uv_risk = "High"
+        safe_exposure_mins = 25
+    elif peak_uv >= 3:
+        uv_risk = "Moderate"
+        safe_exposure_mins = 45
+    else:
+        uv_risk = "Low"
+        safe_exposure_mins = 60
+    
+    # Agricultural Advisory: Find best crop-drying windows (high radiation, low cloud)
+    drying_windows = []
+    for i in range(min(24, len(radiation_data))):
+        rad = radiation_data[i] if i < len(radiation_data) else 0
+        cloud = cloud_data[i] if i < len(cloud_data) else 50
+        if rad > 400 and cloud < 30:
+            drying_windows.append(i)
+    
+    # Irrigation advisory: high temp + high UV = water in evening
+    avg_temp = sum(temp_data[:12]) / 12 if len(temp_data) >= 12 else 25
+    irrigation_advice = "Evening (after 17:00)" if avg_temp > 28 and peak_uv > 6 else "Morning (06:00-09:00)"
+
     payload = {
         "location": str(name),
         "generated_at_utc": datetime.utcnow().isoformat() + "Z",
@@ -63,7 +104,15 @@ async def generate_city_prediction(ms: ModelServer, city: Dict[str, Any]) -> Dic
         "pred_kwh": [float(x) for x in pred.get("pred_kwh", [])],
         "confidence": [float(x) for x in pred.get("confidence", [])],
         "co2_kg_per_hour": [float(x) for x in co2_per_hour],
-        "co2_kg_total": float(co2_total_24h)
+        "co2_kg_total": float(co2_total_24h),
+        # NEW: Health & Agri Data
+        "uv_index": [float(x) for x in uv_24h],
+        "peak_uv": float(peak_uv),
+        "peak_uv_hour": int(peak_uv_hour),
+        "uv_risk_level": uv_risk,
+        "safe_sun_exposure_mins": int(safe_exposure_mins),
+        "agri_drying_windows": drying_windows,
+        "agri_irrigation_advice": irrigation_advice
     }
     return payload
 

@@ -13,6 +13,14 @@ interface PredictionData {
   confidence: number[];
   co2_kg_per_hour: number[];
   co2_kg_total: number;
+  // NEW: Health & Agricultural Metrics
+  uv_index?: number[];
+  peak_uv?: number;
+  peak_uv_hour?: number;
+  uv_risk_level?: string;
+  safe_sun_exposure_mins?: number;
+  agri_drying_windows?: number[];
+  agri_irrigation_advice?: string;
 }
 
 const CITIES = [
@@ -191,6 +199,12 @@ const Dashboard: React.FC = () => {
               hours={data.hours}
               currency={CITIES.find(c => c.id === location)?.currency}
               rate={CITIES.find(c => c.id === location)?.rate}
+              peakUv={data.peak_uv}
+              peakUvHour={data.peak_uv_hour}
+              uvRiskLevel={data.uv_risk_level}
+              safeSunExposureMins={data.safe_sun_exposure_mins}
+              agriDryingWindows={data.agri_drying_windows}
+              agriIrrigationAdvice={data.agri_irrigation_advice}
             />
           </div>
         </div>

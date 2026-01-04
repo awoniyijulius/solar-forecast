@@ -27,3 +27,11 @@ SolarSight is an AI-driven "Resilience-First" renewable energy forecasting platf
 
 ## 5. Climate Impact Recap
 By enabling the displacement of backup diesel generators and optimizing residential solar yields, SolarSight aims to achieve a **Net Carbon Offset of 5.2 Megatonnes of CO2e** across the Global South over the next 5 years.
+
+### Multi-SDG Alignment
+SolarSight is engineered to address **5 United Nations Sustainable Development Goals**:
+*   **SDG 2: Zero Hunger** - Agricultural Intelligence module provides optimal crop-drying windows and irrigation timing advice to farmers, maximizing yields without wasted water.
+*   **SDG 3: Good Health** - Dermatological Advisory uses real-time UV forecasting to protect outdoor workers (farmers, construction) from skin cancer with per-city safe exposure times.
+*   **SDG 7: Affordable & Clean Energy** - Core mission of solar yield optimization.
+*   **SDG 11: Sustainable Cities** - Grid-scale yield forecasting for municipal planning.
+*   **SDG 13: Climate Action** - Regional carbon intensity accounting for high-precision GHG avoidance.
