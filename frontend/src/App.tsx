@@ -92,7 +92,24 @@ const App: React.FC = () => {
             {/* RESTORED SDG GOALS - Enhanced Presence */}
             <div>
               <h4 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] mb-10">United Nations Impact</h4>
-              <div className="grid grid-cols-1 gap-6">
+              <div className="grid grid-cols-1 gap-4">
+                {/* SDG 2: Zero Hunger */}
+                <div className="group flex items-center space-x-4 bg-white/5 p-4 rounded-3xl border border-white/5 hover:border-emerald-500/30 transition-all">
+                  <div className="bg-emerald-600/20 p-3 rounded-2xl text-2xl group-hover:scale-110 transition-transform">🌾</div>
+                  <div>
+                    <p className="text-[10px] font-black text-emerald-500 uppercase tracking-widest">Goal 2</p>
+                    <p className="text-xs font-bold text-slate-200">Zero Hunger</p>
+                  </div>
+                </div>
+                {/* SDG 3: Good Health */}
+                <div className="group flex items-center space-x-4 bg-white/5 p-4 rounded-3xl border border-white/5 hover:border-rose-500/30 transition-all">
+                  <div className="bg-rose-600/20 p-3 rounded-2xl text-2xl group-hover:scale-110 transition-transform">❤️</div>
+                  <div>
+                    <p className="text-[10px] font-black text-rose-500 uppercase tracking-widest">Goal 3</p>
+                    <p className="text-xs font-bold text-slate-200">Good Health</p>
+                  </div>
+                </div>
+                {/* SDG 7: Clean Energy */}
                 <div className="group flex items-center space-x-4 bg-white/5 p-4 rounded-3xl border border-white/5 hover:border-green-500/30 transition-all">
                   <div className="bg-green-600/20 p-3 rounded-2xl text-2xl group-hover:scale-110 transition-transform">⚡</div>
                   <div>
@@ -100,14 +117,16 @@ const App: React.FC = () => {
                     <p className="text-xs font-bold text-slate-200">Affordable & Clean Energy</p>
                   </div>
                 </div>
-                <div className="group flex items-center space-x-4 bg-white/5 p-4 rounded-3xl border border-white/5 hover:border-green-500/30 transition-all">
+                {/* SDG 11: Sustainable Cities */}
+                <div className="group flex items-center space-x-4 bg-white/5 p-4 rounded-3xl border border-white/5 hover:border-cyan-500/30 transition-all">
                   <div className="bg-cyan-600/20 p-3 rounded-2xl text-2xl group-hover:scale-110 transition-transform">🏘️</div>
                   <div>
                     <p className="text-[10px] font-black text-cyan-500 uppercase tracking-widest">Goal 11</p>
                     <p className="text-xs font-bold text-slate-200">Sustainable Cities</p>
                   </div>
                 </div>
-                <div className="group flex items-center space-x-4 bg-white/5 p-4 rounded-3xl border border-white/5 hover:border-green-500/30 transition-all">
+                {/* SDG 13: Climate Action */}
+                <div className="group flex items-center space-x-4 bg-white/5 p-4 rounded-3xl border border-white/5 hover:border-blue-500/30 transition-all">
                   <div className="bg-blue-600/20 p-3 rounded-2xl text-2xl group-hover:scale-110 transition-transform">🌍</div>
                   <div>
                     <p className="text-[10px] font-black text-blue-500 uppercase tracking-widest">Goal 13</p>
