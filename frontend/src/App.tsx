@@ -44,12 +44,14 @@ const App: React.FC = () => {
             Intelligence for a <br />
             <span className="text-green-500">Resilient Future.</span>
           </h2>
-          <p className="text-xl text-slate-400 font-medium leading-relaxed max-w-3xl">
-            SolarSight combines satellite telemetry with gradient boosting to deliver high-precision
-            yield intelligence. By bridging the gap between renewable energy, dermatological health,
-            and agricultural security, we empower communities to leapfrog grid-fragility towards
-            a sustainable, multi-dimensional energy transition.
-          </p>
+          <div className="glass-card p-8 rounded-3xl border border-green-500/20 bg-gradient-to-br from-green-500/5 to-transparent">
+            <p className="text-lg text-slate-300 font-medium leading-relaxed">
+              SolarSight combines satellite telemetry with gradient boosting to deliver high-precision
+              yield intelligence. By bridging the gap between renewable energy, dermatological health,
+              and agricultural security, we empower communities to leapfrog grid-fragility towards
+              a sustainable, multi-dimensional energy transition.
+            </p>
+          </div>
         </header>
 
         <Dashboard />
@@ -89,55 +91,41 @@ const App: React.FC = () => {
               </p>
             </div>
 
-            {/* RESTORED SDG GOALS - Enhanced Presence */}
-            <div>
-              <h4 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] mb-10">United Nations Impact</h4>
-              <div className="grid grid-cols-1 gap-4">
-                {/* SDG 2: Zero Hunger */}
-                <div className="group flex items-center space-x-4 bg-white/5 p-4 rounded-3xl border border-white/5 hover:border-emerald-500/30 transition-all">
-                  <div className="bg-emerald-600/20 p-3 rounded-2xl text-2xl group-hover:scale-110 transition-transform">🌾</div>
-                  <div>
-                    <p className="text-[10px] font-black text-emerald-500 uppercase tracking-widest">Goal 2</p>
-                    <p className="text-xs font-bold text-slate-200">Zero Hunger</p>
-                  </div>
+            {/* SDG GOALS - Horizontal Grid Tray */}
+            <div className="col-span-2">
+              <h4 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] mb-6">United Nations Impact</h4>
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+                {/* SDG 2 */}
+                <div className="group flex flex-col items-center text-center bg-white/5 p-4 rounded-2xl border border-white/5 hover:border-emerald-500/30 transition-all">
+                  <div className="bg-emerald-600/20 p-3 rounded-xl text-2xl group-hover:scale-110 transition-transform mb-2">🌾</div>
+                  <p className="text-[9px] font-black text-emerald-500 uppercase tracking-widest">Goal 2</p>
+                  <p className="text-[10px] font-bold text-slate-300">Zero Hunger</p>
                 </div>
-                {/* SDG 3: Good Health */}
-                <div className="group flex items-center space-x-4 bg-white/5 p-4 rounded-3xl border border-white/5 hover:border-rose-500/30 transition-all">
-                  <div className="bg-rose-600/20 p-3 rounded-2xl text-2xl group-hover:scale-110 transition-transform">❤️</div>
-                  <div>
-                    <p className="text-[10px] font-black text-rose-500 uppercase tracking-widest">Goal 3</p>
-                    <p className="text-xs font-bold text-slate-200">Good Health</p>
-                  </div>
+                {/* SDG 3 */}
+                <div className="group flex flex-col items-center text-center bg-white/5 p-4 rounded-2xl border border-white/5 hover:border-rose-500/30 transition-all">
+                  <div className="bg-rose-600/20 p-3 rounded-xl text-2xl group-hover:scale-110 transition-transform mb-2">❤️</div>
+                  <p className="text-[9px] font-black text-rose-500 uppercase tracking-widest">Goal 3</p>
+                  <p className="text-[10px] font-bold text-slate-300">Good Health</p>
                 </div>
-                {/* SDG 7: Clean Energy */}
-                <div className="group flex items-center space-x-4 bg-white/5 p-4 rounded-3xl border border-white/5 hover:border-green-500/30 transition-all">
-                  <div className="bg-green-600/20 p-3 rounded-2xl text-2xl group-hover:scale-110 transition-transform">⚡</div>
-                  <div>
-                    <p className="text-[10px] font-black text-green-500 uppercase tracking-widest">Goal 7</p>
-                    <p className="text-xs font-bold text-slate-200">Affordable & Clean Energy</p>
-                  </div>
+                {/* SDG 7 */}
+                <div className="group flex flex-col items-center text-center bg-white/5 p-4 rounded-2xl border border-white/5 hover:border-green-500/30 transition-all">
+                  <div className="bg-green-600/20 p-3 rounded-xl text-2xl group-hover:scale-110 transition-transform mb-2">⚡</div>
+                  <p className="text-[9px] font-black text-green-500 uppercase tracking-widest">Goal 7</p>
+                  <p className="text-[10px] font-bold text-slate-300">Clean Energy</p>
                 </div>
-                {/* SDG 11: Sustainable Cities */}
-                <div className="group flex items-center space-x-4 bg-white/5 p-4 rounded-3xl border border-white/5 hover:border-cyan-500/30 transition-all">
-                  <div className="bg-cyan-600/20 p-3 rounded-2xl text-2xl group-hover:scale-110 transition-transform">🏘️</div>
-                  <div>
-                    <p className="text-[10px] font-black text-cyan-500 uppercase tracking-widest">Goal 11</p>
-                    <p className="text-xs font-bold text-slate-200">Sustainable Cities</p>
-                  </div>
+                {/* SDG 11 */}
+                <div className="group flex flex-col items-center text-center bg-white/5 p-4 rounded-2xl border border-white/5 hover:border-cyan-500/30 transition-all">
+                  <div className="bg-cyan-600/20 p-3 rounded-xl text-2xl group-hover:scale-110 transition-transform mb-2">🏘️</div>
+                  <p className="text-[9px] font-black text-cyan-500 uppercase tracking-widest">Goal 11</p>
+                  <p className="text-[10px] font-bold text-slate-300">Sustainable Cities</p>
                 </div>
-                {/* SDG 13: Climate Action */}
-                <div className="group flex items-center space-x-4 bg-white/5 p-4 rounded-3xl border border-white/5 hover:border-blue-500/30 transition-all">
-                  <div className="bg-blue-600/20 p-3 rounded-2xl text-2xl group-hover:scale-110 transition-transform">🌍</div>
-                  <div>
-                    <p className="text-[10px] font-black text-blue-500 uppercase tracking-widest">Goal 13</p>
-                    <p className="text-xs font-bold text-slate-200">Climate Action</p>
-                  </div>
+                {/* SDG 13 */}
+                <div className="group flex flex-col items-center text-center bg-white/5 p-4 rounded-2xl border border-white/5 hover:border-blue-500/30 transition-all">
+                  <div className="bg-blue-600/20 p-3 rounded-xl text-2xl group-hover:scale-110 transition-transform mb-2">🌍</div>
+                  <p className="text-[9px] font-black text-blue-500 uppercase tracking-widest">Goal 13</p>
+                  <p className="text-[10px] font-bold text-slate-300">Climate Action</p>
                 </div>
               </div>
-            </div>
-
-            <div>
-              {/* Dev Console link removed for production security */}
             </div>
           </div>
 

@@ -35,9 +35,20 @@ const HourlyChart: React.FC<HourlyChartProps> = ({ hours, predictions, confidenc
 
   const data = {
     labels: hours.map(h => {
-      // Input format: "2024-12-28T12:00:00"
-      const timePart = h.includes('T') ? h.split('T')[1].substring(0, 5) : h;
-      return timePart;
+      // Input format: "2024-12-28T12:00:00" or "2024-12-28T12:00"
+      try {
+        const date = new Date(h);
+        const month = date.toLocaleDateString('en-US', { month: 'short' });
+        const day = date.getDate();
+        const hour = date.getHours();
+        const ampm = hour >= 12 ? 'PM' : 'AM';
+        const hour12 = hour % 12 || 12;
+        return `${month} ${day}, ${hour12} ${ampm}`;
+      } catch {
+        // Fallback: just show the time part
+        const timePart = h.includes('T') ? h.split('T')[1].substring(0, 5) : h;
+        return timePart;
+      }
     }),
     datasets: [
       {
