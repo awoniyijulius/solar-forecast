@@ -56,7 +56,7 @@ class CacheClient:
         # DiskCache fallback
         return self.disk_cache.get(key)
 
-    def set(self, key: str, value, ttl: int = 3600):
+    def set(self, key: str, value, ttl: int = None):
         # Use our custom encoder
         # For DiskCache, strictly we don't need to JSON stringify, but for consistency we do
         # so objects are returned as dicts/primitives
@@ -64,6 +64,9 @@ class CacheClient:
         
         if self.redis_client:
             str_val = json.dumps(json_val) # Redis needs string
-            self.redis_client.set(key, str_val, ex=ttl)
+            if ttl:
+                self.redis_client.set(key, str_val, ex=ttl)
+            else:
+                self.redis_client.set(key, str_val) # Permanent
         else:
             self.disk_cache.set(key, json_val, expire=ttl)

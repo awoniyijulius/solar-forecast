@@ -124,7 +124,8 @@ async def generate_city_prediction(ms: ModelServer, city: Dict[str, Any]) -> Dic
         "uv_risk_level": uv_risk,
         "safe_sun_exposure_mins": int(safe_exposure_mins),
         "agri_drying_windows": drying_windows,
-        "agri_irrigation_advice": irrigation_advice
+        "agri_irrigation_advice": irrigation_advice,
+        "is_fallback": fc_json.get("is_fallback", False)
     }
     return payload
 
@@ -148,8 +149,20 @@ async def precompute_city(ms: ModelServer, cch: cache.CacheClient, city: Dict[st
                 pass # If parsing fails, proceed to refresh
 
         payload = await generate_city_prediction(ms, city)
-        cch.set(name, payload, ttl=ttl)
-        print(f"[{datetime.utcnow().isoformat()}] ✅ {name.upper()} | CO2: {payload['co2_kg_total']:.2f}kg")
+        
+        # STALE-WHILE-REVALIDATE STRATEGY
+        # If the new payload is a "Theoretical Fallback" (API failed),
+        # but we have existing data in the cache (even if old), KEEP THE EXISTING DATA.
+        # This ensures we serve "Stale Real Data" instead of "Synthetic Data" if possible.
+        if payload.get("is_fallback") and existing:
+            print(f"[{datetime.utcnow().isoformat()}] ⚠️ {name.upper()} | API Failed. Preserving existing stale data (Better than fallback).")
+            return
+
+        # Store INDEFINITELY (ttl=None). We only overwrite when we get new fresh data.
+        cch.set(name, payload, ttl=None)
+        
+        status_icon = "⚠️" if payload.get("is_fallback") else "✅"
+        print(f"[{datetime.utcnow().isoformat()}] {status_icon} {name.upper()} | CO2: {payload['co2_kg_total']:.2f}kg | Fallback: {payload.get('is_fallback')}")
     except Exception as e:
         print(f"[{datetime.utcnow().isoformat()}] ❌ {name}: {e}")
 
