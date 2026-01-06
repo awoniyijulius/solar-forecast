@@ -178,10 +178,41 @@ const Dashboard: React.FC = () => {
                   </p>
                 )}
               </div>
-              <div className="flex items-center text-[10px] font-bold text-green-500 bg-green-500/10 px-3 py-1.5 rounded-full uppercase tracking-widest border border-green-500/20">
-                <span className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-ping"></span>
-                Last Sync: {new Date(data.generated_at_utc).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-              </div>
+              {(() => {
+                const now = new Date();
+                const genDate = new Date(data.generated_at_utc);
+                const diffMs = now.getTime() - genDate.getTime();
+                const diffMins = Math.floor(diffMs / 60000);
+
+                let timeText = 'Just now';
+                let colorClass = 'text-green-500';
+                let bgClass = 'bg-green-500';
+                let borderClass = 'border-green-500/20';
+
+                if (diffMins > 0 && diffMins < 60) {
+                  timeText = `${diffMins} min${diffMins > 1 ? 's' : ''} ago`;
+                } else if (diffMins >= 60) {
+                  const hours = Math.floor(diffMins / 60);
+                  timeText = `${hours} hour${hours > 1 ? 's' : ''} ago`;
+                  if (hours >= 2) {
+                    colorClass = 'text-amber-500';
+                    bgClass = 'bg-amber-500';
+                    borderClass = 'border-amber-500/20';
+                  }
+                  if (hours >= 6) {
+                    colorClass = 'text-red-500';
+                    bgClass = 'bg-red-500';
+                    borderClass = 'border-red-500/20';
+                  }
+                }
+
+                return (
+                  <div className={`flex items-center text-[10px] font-bold ${colorClass} ${bgClass.replace('bg-', 'bg-')}/10 px-3 py-1.5 rounded-full uppercase tracking-widest border ${borderClass}`} title={`Generated at: ${genDate.toLocaleString()}`}>
+                    <span className={`w-2 h-2 ${bgClass} rounded-full mr-2 ${diffMins < 30 ? 'animate-ping' : ''}`}></span>
+                    Live Refresh: <span className="ml-1 text-white">{timeText}</span>
+                  </div>
+                );
+              })()}
             </div>
             <HourlyChart
               hours={data.hours.slice(0, forecastHours)}
