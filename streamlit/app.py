@@ -205,4 +205,4 @@ elif page == "Cluster Infrastructure":
 st.sidebar.markdown("---")
 st.sidebar.markdown(f"**System Status**: ✅ PRODUCTION ONLINE")
 st.sidebar.markdown(f"**Version**: 1.0.2-Stable")
-st.sidebar.info("[← Go to Public Dashboard](https://solarsight-frontend.onrender.com)")
+st.sidebar.info("[← Go to Public Dashboard](https://solarsight-intel.onrender.com)")

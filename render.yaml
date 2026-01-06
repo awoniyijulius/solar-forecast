@@ -19,7 +19,7 @@ services:
   # 🎨 FRONTEND (React + Vite) [FREE TIER]
   # ---------------------------------------------------
   - type: web
-    name: solarsight-frontend
+    name: solarsight-intel
     env: static
     buildCommand: cd frontend && npm install && npm run build
     staticPublishPath: frontend/dist

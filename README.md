@@ -50,7 +50,7 @@ The platform is deployed on **Render Free Tier** using a highly optimized "Zero-
 - **Admin Hub**: Streamlit (Python Service).
 - **Automation**: AsyncIO Background Loop for data precomputation (No external Cron required).
 
-**[👉 View Live Demo](https://solarsight-frontend.onrender.com)**
+**[👉 View Live Demo](https://solarsight-intel.onrender.com)**
 
 ## Quick Start
 

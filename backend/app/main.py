@@ -5,7 +5,7 @@ from app.api import predictions, admin
 import os
 
 app = FastAPI(
-    title="SolarSight Backend", 
+    title="SolarSight Intelligence Engine", 
     version="0.1.0",
     description="Real-time solar energy prediction API with 24-hour forecasts and CO₂ tracking"
 )
@@ -47,7 +47,7 @@ async def root():
         </head>
         <body>
             <div class="card">
-                <h1>SolarSight API</h1>
+                <h1>SolarSight Intelligence Gateway</h1>
                 <p>SYSTEM STATUS: <span class="status">● {redis_status}</span></p>
                 <div class="meta">
                     <p>Version 1.2.0 • LightGBM Inference Engine</p>
