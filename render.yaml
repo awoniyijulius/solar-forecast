@@ -16,19 +16,22 @@ services:
         value: /opt/render/project/src/ml/artifacts/lightgbm_model.joblib
 
   # ---------------------------------------------------
-  # 🎨 FRONTEND (React + Vite) [FREE TIER]
+  # 🎨 FRONTEND - LEGACY (Social Media Links)
+  # ---------------------------------------------------
+  - type: web
+    name: solarsight-frontend
+    env: static
+    buildCommand: cd frontend && npm install && npm run build
+    staticPublishPath: frontend/dist
+
+  # ---------------------------------------------------
+  # 🚀 FRONTEND - INTEL (Premium/Funding)
   # ---------------------------------------------------
   - type: web
     name: solarsight-intel
     env: static
     buildCommand: cd frontend && npm install && npm run build
     staticPublishPath: frontend/dist
-    # envVars:
-    #   - key: VITE_API_URL
-    #     fromService:
-    #       type: web
-    #       name: solarsight-api
-    #       property: host
 
   # ---------------------------------------------------
   # 🛡️ ADMIN DASHBOARD (Streamlit) [FREE TIER]

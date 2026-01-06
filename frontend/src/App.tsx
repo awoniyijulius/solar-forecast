@@ -23,19 +23,27 @@ const App: React.FC = () => {
 
   return (
     <div className="bg-nature-overlay font-sans text-slate-200 overflow-x-hidden min-h-screen">
+      {/* Migration Banner - Only visible on Legacy Domain */}
+      {typeof window !== 'undefined' && window.location.hostname.includes('solarsight-frontend') && (
+        <div className="bg-gradient-to-r from-emerald-600 to-green-600 text-white text-[10px] md:text-xs font-bold uppercase tracking-widest py-2 text-center cursor-pointer hover:underline"
+          onClick={() => window.location.href = 'https://solarsight-intel.onrender.com'}>
+          🚀 Upgrade to the new SolarSight Intelligence Engine →
+        </div>
+      )}
+
       {/* Header */}
-      <nav className="sticky top-0 z-50 glass-card px-8 py-5 mx-6 mt-4 rounded-3xl flex justify-between items-center border-b border-white/10">
-        <div className="flex items-center space-x-3">
+      <nav className="sticky top-0 z-50 glass-card px-4 md:px-8 py-4 mx-4 md:mx-6 mt-4 rounded-3xl flex flex-col md:flex-row justify-between items-center border-b border-white/10 space-y-4 md:space-y-0">
+        <div className="flex items-center space-x-3 w-full md:w-auto justify-center md:justify-start">
           <div className="bg-green-600 p-2 rounded-2xl shadow-lg shadow-green-600/40">
             <span className="text-2xl">🌞</span>
           </div>
-          <h1 className="text-3xl font-black text-gradient tracking-tighter">SolarSight</h1>
+          <h1 className="text-2xl md:text-3xl font-black text-gradient tracking-tighter">SolarSight</h1>
         </div>
 
-        <div className="hidden md:flex items-center space-x-8 text-xs font-bold text-slate-400 uppercase tracking-widest">
-          <button onClick={() => setActiveInfo('forecasting')} className="hover:text-green-400 transition-colors">Forecasting</button>
-          <button onClick={() => setActiveInfo('sdg')} className="hover:text-green-400 transition-colors">SDG Impact</button>
-          <button onClick={() => setActiveInfo('resilience')} className="hover:text-green-400 transition-colors">Resilience Hub</button>
+        <div className="flex items-center space-x-4 md:space-x-8 text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-widest w-full md:w-auto justify-center">
+          <button onClick={() => setActiveInfo('forecasting')} className="hover:text-green-400 transition-colors whitespace-nowrap">Forecasting</button>
+          <button onClick={() => setActiveInfo('sdg')} className="hover:text-green-400 transition-colors whitespace-nowrap">SDG Impact</button>
+          <button onClick={() => setActiveInfo('resilience')} className="hover:text-green-400 transition-colors whitespace-nowrap">Resilience Hub</button>
         </div>
       </nav>
 
