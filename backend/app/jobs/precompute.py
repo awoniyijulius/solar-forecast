@@ -143,7 +143,7 @@ async def precompute_city(ms: ModelServer, cch: cache.CacheClient, city: Dict[st
                 last_gen = datetime.fromisoformat(ts)
                 age_sec = (datetime.utcnow() - last_gen).total_seconds()
                 
-                if age_sec < 720: # 12 minutes
+                if age_sec < 3500: # ~1 hour (slightly less to ensure we catch it)
                     print(f"[{datetime.utcnow().isoformat()}] ⏩ {name.upper()} | Cache is fresh ({age_sec:.0f}s old). Skipping API hit.")
                     return
             except Exception:
@@ -190,7 +190,7 @@ async def scheduler():
     while True:
         print(f"[{datetime.utcnow().isoformat()}] 🔄 Starting Precompute Cycle")
         await run_precompute_cycle()
-        sleep_sec = 900
+        sleep_sec = 3600
         print(f"[{datetime.utcnow().isoformat()}] ⏳ Sleeping {sleep_sec}s")
         await asyncio.sleep(sleep_sec)
 

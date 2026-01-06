@@ -23,20 +23,55 @@ class WeatherServiceError(Exception):
 def get_theoretical_fallback(lat: float, lon: float) -> Dict[str, Any]:
     """Generates a base 'clear-sky' fallback if the API is completely failing."""
     logger.warning(f"🛠️ Generating theoretical fallback for {lat}, {lon}")
-    # Simple sine-wave based solar proxy
+    
     hours = 72 # 3 days
     base_time = datetime.datetime.utcnow().replace(minute=0, second=0, microsecond=0)
     
-    # Mock Open-Meteo structure
+    # Estimate local time offset from UTC (15 degrees per hour)
+    offset_hours = lon / 15.0
+    
+    times = []
+    temps = []
+    clouds = []
+    rads = []
+    uvs = []
+    
+    for i in range(hours):
+        current_time = base_time + datetime.timedelta(hours=i)
+        times.append(current_time.isoformat())
+        
+        # Calculate approximate local hour (0-24)
+        local_hour = (current_time.hour + current_time.minute / 60.0 + offset_hours) % 24
+        
+        # Solar estimation: Sun roughly up between 6:00 and 18:00
+        # Peak at 12:00
+        if 6.0 <= local_hour <= 18.0:
+            # Sine wave from 0 to pi
+            # (local_hour - 6) maps 6->0, 12->6, 18->12. Divide by 12 * pi
+            factor = math.sin((local_hour - 6.0) / 12.0 * math.pi)
+            factor = max(0.0, factor)
+        else:
+            factor = 0.0
+            
+        # Generate synthetic data
+        rad = 1000.0 * factor  # Max 1000 W/m2
+        uv = 11.0 * factor     # Max UV 11
+        temp = 20.0 + (10.0 * factor) # 20C night, 30C day
+        
+        rads.append(rad)
+        uvs.append(uv)
+        temps.append(temp)
+        clouds.append(0) # Clear sky assumption for fallback
+        
     return {
         "timezone": "UTC",
         "timezone_abbreviation": "UTC",
         "hourly": {
-            "time": [(base_time + datetime.timedelta(hours=i)).isoformat() for i in range(hours)],
-            "temperature_2m": [25.0 + 5.0 * math.sin((i-6) * math.pi/12) for i in range(hours)],
-            "cloudcover": [10 for _ in range(hours)],
-            "shortwave_radiation": [max(0, 800 * math.sin((i-6) * math.pi/12)) for i in range(hours)],
-            "uv_index": [max(0, 8 * math.sin((i-6) * math.pi/12)) for i in range(hours)]
+            "time": times,
+            "temperature_2m": temps,
+            "cloudcover": clouds,
+            "shortwave_radiation": rads,
+            "uv_index": uvs
         },
         "is_fallback": True
     }

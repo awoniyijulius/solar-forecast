@@ -31,7 +31,7 @@ def test_co2_calculation():
         
         # Test with 10 kWh
         result = co2_avoided_kgs(10.0)
-        expected = 10.0 * 0.475  # 4.75 kg
+        expected = 10.0 * 0.450  # 4.50 kg (Default grid intensity 450g)
         
         if abs(result - expected) < 0.01:
             print(f"✅ CO₂ calculation correct: {result:.2f} kg for 10 kWh")
@@ -90,6 +90,69 @@ def test_feature_builder():
         print(f"❌ Feature builder error: {e}")
         return False
 
+def test_theoretical_fallback():
+    """Test theoretical fallback physics"""
+    print("\nTesting theoretical fallback...")
+    try:
+        from app.services.weather_client import get_theoretical_fallback
+        from datetime import datetime
+        
+        # Test Case 1: Prime Meridian (London/Accra). NOON UTC should be SUNNY.
+        # lon=0.0 -> offset=0. Local = UTC.
+        res = get_theoretical_fallback(0.0, 0.0)
+        times = res["hourly"]["time"]
+        rads = res["hourly"]["shortwave_radiation"]
+        
+        # Find index for 12:00 UTC today/tomorrow
+        noon_idx = -1
+        midnight_idx = -1
+        
+        for i, t_str in enumerate(times):
+            dt = datetime.fromisoformat(t_str)
+            if dt.hour == 12 and noon_idx == -1:
+                noon_idx = i
+            if dt.hour == 0 and midnight_idx == -1:
+                midnight_idx = i
+                
+        if noon_idx == -1: 
+            print("⚠️ Could not find noon index")
+            return False
+            
+        print(f"  [Lon 0] Rad at 12:00 UTC: {rads[noon_idx]:.1f}")
+        print(f"  [Lon 0] Rad at 00:00 UTC: {rads[midnight_idx]:.1f}")
+        
+        if rads[noon_idx] < 100:
+            print("❌ Lon 0: Noon should be sunny!")
+            return False
+        if rads[midnight_idx] > 10:
+            print("❌ Lon 0: Midnight should be dark!")
+            return False
+            
+        # Test Case 2: 180 deg East (Fijiish). NOON UTC is MIDNIGHT Local.
+        # lon=180 -> offset +12. 
+        # 12:00 UTC + 12 = 24:00 (Midnight). Should be DARK.
+        # 00:00 UTC + 12 = 12:00 (Noon). Should be SUNNY.
+        
+        res_fiji = get_theoretical_fallback(0.0, 180.0)
+        rads_fiji = res_fiji["hourly"]["shortwave_radiation"]
+        
+        print(f"  [Lon 180] Rad at 12:00 UTC: {rads_fiji[noon_idx]:.1f}")
+        print(f"  [Lon 180] Rad at 00:00 UTC: {rads_fiji[midnight_idx]:.1f}")
+
+        if rads_fiji[noon_idx] > 10:
+             print("❌ Lon 180: 12:00 UTC (Midnight Local) should be dark!")
+             return False
+        if rads_fiji[midnight_idx] < 100:
+             print("❌ Lon 180: 00:00 UTC (Noon Local) should be sunny!")
+             return False
+
+        print("✅ Theoretical physics verified correctly")
+        return True
+
+    except Exception as e:
+        print(f"❌ Fallback test error: {e}")
+        return False
+
 def main():
     print("="*60)
     print("SolarSight Backend Component Tests")
@@ -99,6 +162,7 @@ def main():
         test_imports,
         test_co2_calculation,
         test_model_server,
+        test_theoretical_fallback,
         test_feature_builder
     ]
     
