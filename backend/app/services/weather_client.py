@@ -33,10 +33,10 @@ def get_theoretical_fallback(lat: float, lon: float) -> Dict[str, Any]:
         "timezone_abbreviation": "UTC",
         "hourly": {
             "time": [(base_time + datetime.timedelta(hours=i)).isoformat() for i in range(hours)],
-            "temperature_2m": [25.0 + 5.0 * math.sin((i+12) * math.pi/12) for i in range(hours)],
+            "temperature_2m": [25.0 + 5.0 * math.sin((i-6) * math.pi/12) for i in range(hours)],
             "cloudcover": [10 for _ in range(hours)],
-            "shortwave_radiation": [max(0, 800 * math.sin((i+6) * math.pi/12)) for i in range(hours)],
-            "uv_index": [max(0, 8 * math.sin((i+6) * math.pi/12)) for i in range(hours)]
+            "shortwave_radiation": [max(0, 800 * math.sin((i-6) * math.pi/12)) for i in range(hours)],
+            "uv_index": [max(0, 8 * math.sin((i-6) * math.pi/12)) for i in range(hours)]
         },
         "is_fallback": True
     }
