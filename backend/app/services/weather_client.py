@@ -61,31 +61,18 @@ async def fetch_hourly_forecast(lat: float, lon: float, hours: int = 48) -> Dict
     if api_key:
         params["apikey"] = api_key
     
-    max_retries = 3
-    base_delay = 5
-    
-    for attempt in range(max_retries):
-        try:
-            async with httpx.AsyncClient(timeout=20.0, verify=False, headers=headers) as client:
-                r = await client.get(url, params=params)
-                
-                if r.status_code == 429:
-                    # Look for Retry-After header or use jittered backoff
-                    retry_after = r.headers.get("Retry-After")
-                    wait_time = int(retry_after) if retry_after and retry_after.isdigit() else (base_delay ** attempt) + random.uniform(0, 2)
-                    
-                    logger.warning(f"⚠️ Open-Meteo says wait {wait_time}s. (Attempt {attempt+1}/{max_retries})")
-                    await asyncio.sleep(wait_time)
-                    continue
-                
-                r.raise_for_status()
-                return r.json()
-        except Exception as e:
-            if attempt == max_retries - 1:
-                logger.error(f"❌ Weather API failed permanently: {e}. Switching to theoretical model.")
+    # AGGRESSIVE FALLBACK STRATEGY FOR COMPETITION STABILITY
+    # Try once. If it fails (429, 500, Timeout), immediately return Fallback.
+    try:
+        async with httpx.AsyncClient(timeout=15.0, verify=False, headers=headers) as client:
+            r = await client.get(url, params=params)
+            
+            if r.status_code == 429:
+                logger.warning(f"⚠️ API Saturated (429). Immediate Fallback for {lat},{lon}")
                 return get_theoretical_fallback(lat, lon)
             
-            wait_time = (base_delay ** attempt) + random.uniform(0, 1)
-            await asyncio.sleep(wait_time)
-    
-    return get_theoretical_fallback(lat, lon)
+            r.raise_for_status()
+            return r.json()
+    except Exception as e:
+        logger.error(f"❌ Weather API Error: {e}. Switching to theoretical model for {lat},{lon}")
+        return get_theoretical_fallback(lat, lon)
