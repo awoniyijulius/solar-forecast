@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.responses import HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
 from app.api import predictions, admin
 import os
@@ -22,17 +23,41 @@ app.add_middleware(
 app.include_router(predictions.router, prefix="/api", tags=["Predictions"])
 app.include_router(admin.router, tags=["Admin"])
 
-@app.get("/")
+@app.get("/", response_class=HTMLResponse)
 async def root():
     from app.services.cache import CacheClient
     cache = CacheClient()
     hits = cache.get("system_impressions") or 0
-    return {
-        "service": "solar-sight-backend",
-        "status": "ok",
-        "total_impressions": hits,
-        "version": "1.1.0"
-    }
+    redis_status = "OPERATIONAL" if cache.redis_client else "LOCAL_MODE"
+    
+    return f"""
+    <!DOCTYPE html>
+    <html>
+        <head>
+            <title>SolarSight API</title>
+            <style>
+                body {{ background-color: #0f172a; color: #f8fafc; font-family: 'Segoe UI', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }}
+                .card {{ background: rgba(255, 255, 255, 0.05); padding: 3rem; border-radius: 1.5rem; border: 1px solid rgba(255,255,255,0.1); text-align: center; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); backdrop-filter: blur(10px); }}
+                h1 {{ margin: 0 0 1rem 0; font-weight: 800; font-size: 2.5rem; background: linear-gradient(to right, #4ade80, #3b82f6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }}
+                .status {{ color: #4ade80; font-weight: bold; font-family: monospace; letter-spacing: 0.1em; }}
+                .meta {{ color: #94a3b8; margin: 1.5rem 0; font-size: 0.9rem; }}
+                a {{ background: rgba(255,255,255,0.1); color: #fff; text-decoration: none; padding: 0.75rem 1.5rem; border-radius: 0.75rem; display: inline-block; font-weight: 600; transition: all 0.2s; border: 1px solid rgba(255,255,255,0.1); }}
+                a:hover {{ background: #fff; color: #000; transform: translateY(-2px); }}
+            </style>
+        </head>
+        <body>
+            <div class="card">
+                <h1>SolarSight API</h1>
+                <p>SYSTEM STATUS: <span class="status">● {redis_status}</span></p>
+                <div class="meta">
+                    <p>Version 1.2.0 • LightGBM Inference Engine</p>
+                    <p>Total Impressions: {hits}</p>
+                </div>
+                <a href="/docs">🚀 Open Developer Console</a>
+            </div>
+        </body>
+    </html>
+    """
 
 @app.post("/api/analytics/hit")
 async def track_impression():
