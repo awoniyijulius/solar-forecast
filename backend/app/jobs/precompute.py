@@ -125,7 +125,8 @@ async def generate_city_prediction(ms: ModelServer, city: Dict[str, Any]) -> Dic
         "safe_sun_exposure_mins": int(safe_exposure_mins),
         "agri_drying_windows": drying_windows,
         "agri_irrigation_advice": irrigation_advice,
-        "is_fallback": fc_json.get("is_fallback", False)
+        "is_fallback": fc_json.get("is_fallback", False),
+        "data_version": "2.0" # Bump this to invalidate old cache entries
     }
     return payload
 
@@ -149,16 +150,19 @@ async def precompute_city(ms: ModelServer, cch: cache.CacheClient, city: Dict[st
                 pass # If parsing fails, proceed to refresh
 
         payload = await generate_city_prediction(ms, city)
+        # STALE-WHILE-REVALIDATE STRATEGY (With Version Control)
+        # 1. Check Version: If old version (pre-physics fix), we MUST overwrite.
+        current_version = "2.0"
+        existing_version = existing.get("data_version", "1.0") if existing else "0.0"
         
-        # STALE-WHILE-REVALIDATE STRATEGY
-        # If the new payload is a "Theoretical Fallback" (API failed),
-        # but we have existing data in the cache (even if old), KEEP THE EXISTING DATA.
-        # This ensures we serve "Stale Real Data" instead of "Synthetic Data" if possible.
-        if payload.get("is_fallback") and existing:
-            print(f"[{datetime.utcnow().isoformat()}] ⚠️ {name.upper()} | API Failed. Preserving existing stale data (Better than fallback).")
+        is_stale_version = existing_version != current_version
+
+        # 2. If API Failed (Fallback) BUT we have good data (Same Version) -> Keep it.
+        if payload.get("is_fallback") and existing and not is_stale_version:
+            print(f"[{datetime.utcnow().isoformat()}] ⚠️ {name.upper()} | API Failed. Preserving valid stale data.")
             return
 
-        # Store INDEFINITELY (ttl=None). We only overwrite when we get new fresh data.
+        # 3. If Valid Data OR New Version (Fixing bugs) -> Overwrite.
         cch.set(name, payload, ttl=None)
         
         status_icon = "⚠️" if payload.get("is_fallback") else "✅"

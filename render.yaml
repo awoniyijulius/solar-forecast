@@ -15,14 +15,13 @@ services:
       - key: MODEL_PATH
         value: /opt/render/project/src/ml/artifacts/lightgbm_model.joblib
 
-  # ---------------------------------------------------
-  # 🎨 FRONTEND - LEGACY (Social Media Links)
-  # ---------------------------------------------------
-  - type: web
-    name: solarsight-frontend
-    env: static
-    buildCommand: cd frontend && npm install && npm run build
     staticPublishPath: frontend/dist
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          type: web
+          name: solarsight-api
+          property: url
 
   # ---------------------------------------------------
   # 🚀 FRONTEND - INTEL (Premium/Funding)
@@ -32,6 +31,12 @@ services:
     env: static
     buildCommand: cd frontend && npm install && npm run build
     staticPublishPath: frontend/dist
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          type: web
+          name: solarsight-api
+          property: url
 
   # ---------------------------------------------------
   # 🛡️ ADMIN DASHBOARD (Streamlit) [FREE TIER]
