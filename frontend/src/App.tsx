@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Dashboard from './components/Dashboard';
 import './styles/tailwind.css';
 
@@ -19,6 +19,29 @@ const App: React.FC = () => {
       body: "Built for energy autonomy in any infrastructure. Our engine calculates the direct displacement of backup diesel generators, providing a roadmap for carbon-neutrality and humanitarian energy access in grid-fragile regions."
     }
   };
+
+  // Health Check State
+  const [systemStatus, setSystemStatus] = useState<'operational' | 'offline'>('offline');
+
+  useEffect(() => {
+    const checkHealth = async () => {
+      try {
+        const meta = (import.meta as any).env;
+        let url = meta.VITE_API_URL || '(Localhost)';
+        if (url !== '(Localhost)' && !url.startsWith('http')) {
+          url = `https://${url}`;
+        }
+        // If localhost, default to http://localhost:8000
+        if (url === '(Localhost)') url = 'http://localhost:8000';
+
+        const res = await fetch(`${url}/api/health`);
+        if (res.ok) setSystemStatus('operational');
+      } catch (e) {
+        setSystemStatus('offline');
+      }
+    };
+    checkHealth();
+  }, []);
 
   return (
     <div className="bg-nature-overlay font-sans text-slate-200 overflow-x-hidden min-h-screen">
@@ -86,8 +109,8 @@ const App: React.FC = () => {
                 <span className="font-black tracking-tighter text-xl text-white">SolarSight</span>
               </div>
               <p className="text-slate-500 max-w-sm text-sm font-medium leading-relaxed">
-                Empowering the global energy transition with data-driven AI models.
-                Optimizing renewable harvesting through satellite leads and LightGBM regression.
+                Empowering the Global South with open-source, high-precision renewable energy telemetries.
+                Built for resilience, engineered for impact.
               </p>
             </div>
 
@@ -130,16 +153,24 @@ const App: React.FC = () => {
           </div>
 
           <div className="flex flex-col md:flex-row justify-between items-center border-t border-white/5 pt-10">
-            <p className="text-slate-500 text-[10px] font-bold uppercase tracking-[0.3em]">
-              © {new Date().getFullYear()} SolarSight Intelligent Systems.
-            </p>
+            <div className="mb-6 md:mb-0">
+              <p className="text-slate-500 text-[10px] font-bold uppercase tracking-[0.3em] mb-2">
+                © {new Date().getFullYear()} SolarSight Intelligent Systems.
+              </p>
+              <div className="flex items-center space-x-2">
+                <span className={`w-2 h-2 rounded-full ${systemStatus === 'operational' ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`}></span>
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                  System Status: {systemStatus === 'operational' ? 'Live & Healthy' : 'Offline'}
+                </span>
+              </div>
+            </div>
             <p className="text-white text-sm font-black tracking-tight mt-6 md:mt-0">
-              Developed by <span className="text-green-500 underline underline-offset-8 decoration-green-900/50">Olayinka Julius</span>, Full-Stack Data Scientist
+              Developed by <span className="text-green-500 underline underline-offset-8 decoration-green-900/50">Olayinka Julius</span>
             </p>
           </div>
         </div>
       </footer>
-    </div>
+    </div >
   );
 };
 

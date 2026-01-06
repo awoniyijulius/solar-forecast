@@ -43,6 +43,25 @@ async def track_impression():
     cache.set("system_impressions", new_total, ttl=None) # Persistent
     return {"status": "recorded", "count": new_total}
 
+@app.get("/api/health")
+async def health_check():
+    """Diagnostic health check for system status"""
+    from app.services.cache import CacheClient
+    cache = CacheClient()
+    
+    # Check Redis
+    redis_status = "connected" if cache.redis_client else "local_fallback"
+    
+    return {
+        "status": "operational",
+        "components": {
+            "api": "healthy",
+            "database": redis_status,
+            "ml_engine": "loaded"
+        },
+        "version": "1.2.0"
+    }
+
 @app.on_event("startup")
 async def startup_event():
     """Verify connections on startup and start background scheduler"""

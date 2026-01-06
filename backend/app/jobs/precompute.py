@@ -43,7 +43,19 @@ async def generate_city_prediction(ms: ModelServer, city: Dict[str, Any]) -> Dic
     pred = ms.predict_24h(feats_df)
     
     # NEW: Using regional intensity factors for climate impact accuracy
-    co2_per_hour = [float(co2.co2_avoided_kgs(float(k), name)) for k in pred.get("pred_kwh", [])]
+    # GUARDRAIL: Nighttime Zeroing. If radiation is 0 (night), force prediction to 0.
+    raw_preds = pred.get("pred_kwh", [])
+    hourly = fc_json.get("hourly", {})
+    rad_data = hourly.get("shortwave_radiation", [0] * len(raw_preds))
+    
+    clean_preds = []
+    for i, p in enumerate(raw_preds):
+        # If radiation is < 10 W/m² (Astronomical Night/Twilight), energy MUST be 0
+        rad = rad_data[i] if i < len(rad_data) else 0
+        val = 0.0 if rad < 10 else float(p)
+        clean_preds.append(val)
+
+    co2_per_hour = [float(co2.co2_avoided_kgs(k, name)) for k in clean_preds]
     co2_total_24h = float(sum(co2_per_hour[:24]))
     
     # Explicit conversion to ensure NO non-serializable objects
@@ -101,7 +113,7 @@ async def generate_city_prediction(ms: ModelServer, city: Dict[str, Any]) -> Dic
         "timezone": fc_json.get("timezone", "UTC"),
         "timezone_abbr": fc_json.get("timezone_abbreviation", "UTC"),
         "hours": clean_hours,
-        "pred_kwh": [float(x) for x in pred.get("pred_kwh", [])],
+        "pred_kwh": [float(x) for x in clean_preds],
         "confidence": [float(x) for x in pred.get("confidence", [])],
         "co2_kg_per_hour": [float(x) for x in co2_per_hour],
         "co2_kg_total": float(co2_total_24h),
