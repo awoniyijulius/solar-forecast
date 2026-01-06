@@ -49,7 +49,7 @@ const Dashboard: React.FC = () => {
     try {
       // Backend handles caching and precompute
       const meta = (import.meta as any).env;
-      let apiUrl = meta.VITE_API_URL || '';
+      let apiUrl = meta.VITE_API_URL || 'https://solarsight-api.onrender.com';
 
       if (apiUrl && !apiUrl.startsWith('http')) {
         apiUrl = `https://${apiUrl}`;

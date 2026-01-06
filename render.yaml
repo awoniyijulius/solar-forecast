@@ -15,13 +15,6 @@ services:
       - key: MODEL_PATH
         value: /opt/render/project/src/ml/artifacts/lightgbm_model.joblib
 
-    staticPublishPath: frontend/dist
-    envVars:
-      - key: VITE_API_URL
-        fromService:
-          type: web
-          name: solarsight-api
-          property: url
 
   # ---------------------------------------------------
   # 🚀 FRONTEND - INTEL (Premium/Funding)
