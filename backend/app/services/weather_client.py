@@ -25,10 +25,10 @@ def get_theoretical_fallback(lat: float, lon: float) -> Dict[str, Any]:
     logger.warning(f"🛠️ Generating theoretical fallback for {lat}, {lon}")
     
     hours = 72 # 3 days
-    base_time = datetime.datetime.utcnow().replace(minute=0, second=0, microsecond=0)
+    base_time_utc = datetime.datetime.utcnow().replace(minute=0, second=0, microsecond=0)
     
     # Estimate local time offset from UTC (15 degrees per hour)
-    offset_hours = lon / 15.0
+    offset_hours = round(lon / 15.0)
     
     times = []
     temps = []
@@ -37,13 +37,21 @@ def get_theoretical_fallback(lat: float, lon: float) -> Dict[str, Any]:
     uvs = []
     
     for i in range(hours):
-        current_time = base_time + datetime.timedelta(hours=i)
-        times.append(current_time.isoformat())
+        # We need to generate LOCAL time strings because that's what the ML model (feature_builder) expects
+        # (It extracts .dt.hour from the string). 
+        # If we send UTC 02:00 for Sydney, Model sees hour=2 (Night).
+        # We want Model to see hour=12 (Noon).
+        # So we construct the Local Datetime.
         
-        # Calculate approximate local hour (0-24)
-        local_hour = (current_time.hour + current_time.minute / 60.0 + offset_hours) % 24
+        utc_point = base_time_utc + datetime.timedelta(hours=i)
+        local_point = utc_point + datetime.timedelta(hours=offset_hours)
         
-        # Solar estimation: Sun roughly up between 6:00 and 18:00
+        times.append(local_point.isoformat())
+        
+        # Calculate solar position based on this Local Hour
+        local_hour = local_point.hour + (local_point.minute / 60.0)
+        
+        # Solar estimation: Sun roughly up between 6:00 and 18:00 Local Time
         # Peak at 12:00
         if 6.0 <= local_hour <= 18.0:
             # Sine wave from 0 to pi
@@ -58,14 +66,18 @@ def get_theoretical_fallback(lat: float, lon: float) -> Dict[str, Any]:
         uv = 11.0 * factor     # Max UV 11
         temp = 20.0 + (10.0 * factor) # 20C night, 30C day
         
-        rads.append(rad)
-        uvs.append(uv)
-        temps.append(temp)
+        rads.append(round(rad, 1))
+        uvs.append(round(uv, 1))
+        temps.append(round(temp, 1))
         clouds.append(0) # Clear sky assumption for fallback
         
+    # Construct a GMT offset string (e.g., "GMT+9")
+    sign = "+" if offset_hours >= 0 else ""
+    tz_str = f"GMT{sign}{offset_hours}"
+
     return {
-        "timezone": "UTC",
-        "timezone_abbreviation": "UTC",
+        "timezone": tz_str,
+        "timezone_abbreviation": tz_str,
         "hourly": {
             "time": times,
             "temperature_2m": temps,
