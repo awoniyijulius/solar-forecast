@@ -73,11 +73,24 @@ async def generate_city_prediction(ms: ModelServer, city: Dict[str, Any]) -> Dic
     temp_data = hourly.get("temperature_2m", [25] * 48)
     radiation_data = hourly.get("shortwave_radiation", [0] * 48)
     
-    # Peak UV calculation (first 24 hours)
+    # --- Robust Peak detection using Timestamps ---
+    times = hourly.get("time", [])
+    
+    # UV Risk & Peak logic
     uv_24h = uv_data[:24] if len(uv_data) >= 24 else uv_data
     peak_uv = max(uv_24h) if uv_24h else 0
-    peak_uv_hour = uv_24h.index(peak_uv) if uv_24h and peak_uv > 0 else 12
+    peak_uv_hour = 12 # default
     
+    if uv_24h and peak_uv > 0:
+        p_idx = uv_24h.index(peak_uv)
+        if p_idx < len(times):
+            try:
+                # Handle potential "Z" and parse hour
+                dt = datetime.fromisoformat(times[p_idx].replace("Z", ""))
+                peak_uv_hour = dt.hour
+            except Exception:
+                peak_uv_hour = p_idx
+
     # UV Risk Classification (WHO Standard)
     if peak_uv >= 11:
         uv_risk = "Extreme"
@@ -101,7 +114,12 @@ async def generate_city_prediction(ms: ModelServer, city: Dict[str, Any]) -> Dic
         rad = radiation_data[i] if i < len(radiation_data) else 0
         cloud = cloud_data[i] if i < len(cloud_data) else 50
         if rad > 400 and cloud < 30:
-            drying_windows.append(i)
+            if i < len(times):
+                try:
+                    dt = datetime.fromisoformat(times[i].replace("Z", ""))
+                    drying_windows.append(dt.hour)
+                except Exception:
+                    drying_windows.append(i)
     
     # Irrigation advisory: high temp + high UV = water in evening
     avg_temp = sum(temp_data[:12]) / 12 if len(temp_data) >= 12 else 25
@@ -126,7 +144,7 @@ async def generate_city_prediction(ms: ModelServer, city: Dict[str, Any]) -> Dic
         "agri_drying_windows": drying_windows,
         "agri_irrigation_advice": irrigation_advice,
         "is_fallback": fc_json.get("is_fallback", False),
-        "data_version": "2.5" # Bump this to invalidate old cache entries
+        "data_version": "2.6" # Bump this to invalidate old cache entries
     }
     return payload
 
@@ -152,7 +170,7 @@ async def precompute_city(ms: ModelServer, cch: cache.CacheClient, city: Dict[st
         payload = await generate_city_prediction(ms, city)
         # STALE-WHILE-REVALIDATE STRATEGY (With Version Control)
         # 1. Check Version: If old version (pre-physics fix), we MUST overwrite.
-        current_version = "2.5"
+        current_version = "2.6"
         existing_version = existing.get("data_version", "1.0") if existing else "0.0"
         
         is_stale_version = existing_version != current_version
