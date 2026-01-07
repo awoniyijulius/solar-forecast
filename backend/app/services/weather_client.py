@@ -25,7 +25,7 @@ def get_theoretical_fallback(lat: float, lon: float) -> Dict[str, Any]:
     logger.warning(f"🛠️ Generating theoretical fallback for {lat}, {lon}")
     
     hours = 72 # 3 days
-    base_time_utc = datetime.datetime.utcnow().replace(minute=0, second=0, microsecond=0)
+    base_time_utc = datetime.datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
     
     # Estimate local time offset from UTC (15 degrees per hour)
     offset_hours = round(lon / 15.0)

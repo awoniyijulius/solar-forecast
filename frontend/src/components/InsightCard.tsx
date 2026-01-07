@@ -46,6 +46,13 @@ const InsightCard: React.FC<InsightCardProps> = ({
   const corpSupport = (dailyTotalKwh / CORPORATE_BASELINE) * 100;
   const cityImpact = (totalMWh * 365).toFixed(2); // Annual Grid Yield
 
+  // Helper for AM/PM Formatting
+  const formatHour = (h: number) => {
+    const period = h >= 12 ? 'P.M.' : 'A.M.';
+    const hour12 = h % 12 || 12;
+    return `${hour12}:00 ${period}`;
+  };
+
   return (
     <div className="space-y-6 animate-fade-up">
       {/* 🚀 STAKEHOLDER IMPACT ROADMAP */}
@@ -153,17 +160,17 @@ const InsightCard: React.FC<InsightCardProps> = ({
         <h3 className="text-[10px] font-black text-rose-500 uppercase tracking-[0.4em] mb-6">Dermatological Advisory</h3>
         <div className="flex items-center space-x-6">
           <div className={`p-4 rounded-3xl text-3xl ${uvRiskLevel === 'Extreme' || uvRiskLevel === 'Very High' ? 'bg-red-500/20' :
-              uvRiskLevel === 'High' ? 'bg-orange-500/20' : 'bg-yellow-500/20'
+            uvRiskLevel === 'High' ? 'bg-orange-500/20' : 'bg-yellow-500/20'
             }`}>☀️</div>
           <div>
             <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Peak UV Index</p>
             <p className="text-2xl font-black text-white">
               {peakUv.toFixed(1)} <span className={`text-sm ${uvRiskLevel === 'Extreme' || uvRiskLevel === 'Very High' ? 'text-red-400' :
-                  uvRiskLevel === 'High' ? 'text-orange-400' : 'text-yellow-400'
+                uvRiskLevel === 'High' ? 'text-orange-400' : 'text-yellow-400'
                 }`}>({uvRiskLevel})</span>
             </p>
             <p className="text-[9px] font-bold text-slate-500 mt-1">
-              Peak occurs at ~{peakUvHour}:00 local time
+              Peak occurs at ~{formatHour(peakUvHour)} local time
             </p>
           </div>
         </div>
@@ -189,7 +196,7 @@ const InsightCard: React.FC<InsightCardProps> = ({
             </div>
             <p className="text-xs font-bold text-white">
               {agriDryingWindows.length > 0
-                ? `${agriDryingWindows.length} optimal hours today (${agriDryingWindows.slice(0, 3).map(h => `${h}:00`).join(', ')}${agriDryingWindows.length > 3 ? '...' : ''})`
+                ? `${agriDryingWindows.length} optimal hours today (${agriDryingWindows.slice(0, 3).map(h => formatHour(h)).join(', ')}${agriDryingWindows.length > 3 ? '...' : ''})`
                 : 'No ideal windows - expect cloud cover'}
             </p>
           </div>

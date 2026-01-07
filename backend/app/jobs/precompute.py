@@ -126,7 +126,7 @@ async def generate_city_prediction(ms: ModelServer, city: Dict[str, Any]) -> Dic
         "agri_drying_windows": drying_windows,
         "agri_irrigation_advice": irrigation_advice,
         "is_fallback": fc_json.get("is_fallback", False),
-        "data_version": "2.2" # Bump this to invalidate old cache entries
+        "data_version": "2.3" # Bump this to invalidate old cache entries
     }
     return payload
 
@@ -152,7 +152,7 @@ async def precompute_city(ms: ModelServer, cch: cache.CacheClient, city: Dict[st
         payload = await generate_city_prediction(ms, city)
         # STALE-WHILE-REVALIDATE STRATEGY (With Version Control)
         # 1. Check Version: If old version (pre-physics fix), we MUST overwrite.
-        current_version = "2.2"
+        current_version = "2.3"
         existing_version = existing.get("data_version", "1.0") if existing else "0.0"
         
         is_stale_version = existing_version != current_version
