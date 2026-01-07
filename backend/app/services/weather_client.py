@@ -35,6 +35,28 @@ def get_theoretical_fallback(lat: float, lon: float) -> Dict[str, Any]:
     local_now = utc_now + datetime.timedelta(hours=offset_hours)
     local_midnight = local_now.replace(hour=0, minute=0, second=0, microsecond=0)
     
+    # Determine Seasonality / Intensity based on Latitude & Month (Jan)
+    month = datetime.datetime.utcnow().month
+    
+    # Simple heuristic for Jan/Dec (Northern Winter, Southern Summer)
+    is_winter_north = (month >= 11 or month <= 2)
+    
+    # Defaults (Tropics/Fall/Spring) - Equinox-ish
+    peak_intensity = 900.0
+    day_start = 6.5
+    day_end = 17.5
+    
+    if is_winter_north:
+        if lat > 30: # Northern Winter (e.g. London, Berlin, NYC)
+            peak_intensity = 350.0 # Low intensity
+            day_start = 8.5        # Short day
+            day_end = 16.0
+        elif lat < -30: # Southern Summer (e.g. Sydney, Cape Town)
+            peak_intensity = 1100.0 # High intensity
+            day_start = 5.5         # Long day
+            day_end = 20.0
+        # Else Tropics (Lagos, Nairobi): Keep Defaults
+    
     times = []
     temps = []
     
@@ -45,31 +67,36 @@ def get_theoretical_fallback(lat: float, lon: float) -> Dict[str, Any]:
     
     for i in range(hours):
         # Generate timestamps starting from LOCAL MIDNIGHT
-        # This guarantees that index 0 is 00:00 Local, index 12 is 12:00 Local, etc.
         future_local = local_midnight + datetime.timedelta(hours=i)
-        
         times.append(future_local.isoformat())
         
-        # Local hour is just 'i modulo 24' because we started at midnight
+        # Local hour is just 'i modulo 24'
         local_hour = i % 24
         
-        # Solar estimation: Sun roughly up between 6:00 and 18:00 Local Time
-        if 6 <= local_hour <= 18:
-            # Sine wave peak at 12
-            factor = math.sin((local_hour - 6.0) / 12.0 * math.pi)
+        # Solar estimation with dynamic day length
+        if day_start <= local_hour <= day_end:
+            # Normalize hour to 0..1 range within the window
+            window_len = day_end - day_start
+            pos = (local_hour - day_start) / window_len
+            # Sine wave (0 to pi)
+            factor = math.sin(pos * math.pi)
             factor = max(0.0, factor)
         else:
             factor = 0.0
             
-        # Generate synthetic data
-        rad = 1000.0 * factor  # Max 1000 W/m2
-        uv = 11.0 * factor     # Max UV 11
-        temp = 20.0 + (10.0 * factor) 
+        # Generate synthetic data with dynamic peak
+        rad = peak_intensity * factor
+        # UV is roughly proportional to Rad (1000W/m2 ~= 11 UV)
+        uv = (peak_intensity / 90.0) * factor 
+        
+        # Temp lags sun, but simple approximation: Min 15C, Max is base + effect
+        base_temp = 25.0 if lat < 30 and lat > -30 else (5.0 if lat > 30 else 20.0)
+        temp = base_temp + (10.0 * factor) 
         
         rads.append(round(rad, 1))
         uvs.append(round(uv, 1))
         temps.append(round(temp, 1))
-        clouds.append(0) 
+        clouds.append(10) # Slight cloud for realism 
         
     # Construct a GMT offset string (e.g., "GMT+9")
     sign = "+" if offset_hours >= 0 else ""
