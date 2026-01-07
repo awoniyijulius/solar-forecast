@@ -21,41 +21,41 @@ class WeatherServiceError(Exception):
         super().__init__(self.message)
 
 def get_theoretical_fallback(lat: float, lon: float) -> Dict[str, Any]:
-    """Generates a base 'clear-sky' fallback if the API is completely failing."""
-    logger.warning(f"🛠️ Generating theoretical fallback for {lat}, {lon}")
+    """Generates a base 'clear-sky' fallback locally aligned from Midnight to Midnight."""
+    logger.warning(f"🛠️ Generating aligned theoretical fallback for {lat}, {lon}")
     
     hours = 72 # 3 days
-    base_time_utc = datetime.datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
     
-    # Estimate local time offset from UTC (15 degrees per hour)
+    # Estimate local time offset
     offset_hours = round(lon / 15.0)
+    
+    # Calculate "Local Midnight" anchor
+    # We take current UTC, add offset to get "Local Now", then snap to hour=0
+    utc_now = datetime.datetime.utcnow()
+    local_now = utc_now + datetime.timedelta(hours=offset_hours)
+    local_midnight = local_now.replace(hour=0, minute=0, second=0, microsecond=0)
     
     times = []
     temps = []
+    
+    # Arrays
     clouds = []
     rads = []
     uvs = []
     
     for i in range(hours):
-        # We need to generate LOCAL time strings because that's what the ML model (feature_builder) expects
-        # (It extracts .dt.hour from the string). 
-        # If we send UTC 02:00 for Sydney, Model sees hour=2 (Night).
-        # We want Model to see hour=12 (Noon).
-        # So we construct the Local Datetime.
+        # Generate timestamps starting from LOCAL MIDNIGHT
+        # This guarantees that index 0 is 00:00 Local, index 12 is 12:00 Local, etc.
+        future_local = local_midnight + datetime.timedelta(hours=i)
         
-        utc_point = base_time_utc + datetime.timedelta(hours=i)
-        local_point = utc_point + datetime.timedelta(hours=offset_hours)
+        times.append(future_local.isoformat())
         
-        times.append(local_point.isoformat())
-        
-        # Calculate solar position based on this Local Hour
-        local_hour = local_point.hour + (local_point.minute / 60.0)
+        # Local hour is just 'i modulo 24' because we started at midnight
+        local_hour = i % 24
         
         # Solar estimation: Sun roughly up between 6:00 and 18:00 Local Time
-        # Peak at 12:00
-        if 6.0 <= local_hour <= 18.0:
-            # Sine wave from 0 to pi
-            # (local_hour - 6) maps 6->0, 12->6, 18->12. Divide by 12 * pi
+        if 6 <= local_hour <= 18:
+            # Sine wave peak at 12
             factor = math.sin((local_hour - 6.0) / 12.0 * math.pi)
             factor = max(0.0, factor)
         else:
@@ -64,12 +64,12 @@ def get_theoretical_fallback(lat: float, lon: float) -> Dict[str, Any]:
         # Generate synthetic data
         rad = 1000.0 * factor  # Max 1000 W/m2
         uv = 11.0 * factor     # Max UV 11
-        temp = 20.0 + (10.0 * factor) # 20C night, 30C day
+        temp = 20.0 + (10.0 * factor) 
         
         rads.append(round(rad, 1))
         uvs.append(round(uv, 1))
         temps.append(round(temp, 1))
-        clouds.append(0) # Clear sky assumption for fallback
+        clouds.append(0) 
         
     # Construct a GMT offset string (e.g., "GMT+9")
     sign = "+" if offset_hours >= 0 else ""
