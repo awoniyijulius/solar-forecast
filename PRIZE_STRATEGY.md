@@ -4,14 +4,15 @@
 SolarSight is an AI-driven "Resilience-First" renewable energy forecasting platform. While traditional solar forecasting focuses on grid-scale efficiency in developed markets, SolarSight is engineered for the **Global South**—where energy intermittency, grid fragility, and diesel-dependency are systemic barriers to climate action.
 
 ## 2. Competitive Advantage (Solution Creativity)
-*   **Request Collapsing & Edge Optimization**: Designed to run on low-bandwidth, high-latency networks by utilizing intelligent request-locking and aggressive caching protocols.
-*   **Social Impact Telemetry**: Unique focus on translating Solar Yield into **Diesel Avoidance** and **Home-Hours of Energy Access**, moving beyond raw kWh into human-centric metrics.
-*   **Scientific Guardrails**: Implements astronomical night-hour zeroing and regional grid emission factors (marginal intensity) for high-integrity Carbon Avoidance reporting.
+*   **Request Collapsing & Edge Optimization**: Designed for global scalability, from low-bandwidth networks in the Global South to high-performance energy hubs in Europe and North America.
+*   **Social Impact Telemetry**: A universal toolkit translating Solar Yield into **Diesel Avoidance** (Global South), **Grid Autonomy** (EU/US), and **Agricultural Yield Optimization** (Global).
+*   **Scientific Guardrails**: Implements astronomical night-hour zeroing and high-resolution regional grid emission factors for precision CO₂ reporting across diverse climates.
 
-## 3. Market Opportunity (Idea Feasibility)
-### 🎯 Beachhead Market: West African Microgrid Developers
-*   **Problem**: In solar-rich but grid-poor regions like Nigeria and Kenya, backup diesel generators account for 40%+ of residential energy costs.
-*   **Solution**: SolarSight provides the API layer for battery management systems to decide when to charge vs. when to shed load based on 24-hour lookahead, reducing diesel run-time by an estimated 20%.
+## 3. Market Opportunity (Global Scalability)
+### 🎯 Beachhead Market: Decentralized Energy Stakeholders
+*   **The Problem**: Energy transition is uneven. Stable grids (EU) face high-cost peak hours, while emerging markets face intermittency and diesel-dependency.
+*   **The Solution**: SolarSight provides a unified API layer for battery management systems and smart-city planners to optimize loads based on 24-hour predictive intelligence.
+*   **Universal Impact**: Reducing household energy bills in Madrid, optimizing irrigation in Lagos, and managing peak-load shedding in Sydney.
 
 ### 📈 Scalability
 *   **Multi-Tier Infrastructure**: Our Docker-based unified architecture allows a single instance to serve 10 global hubs with <300ms latency.
@@ -26,7 +27,7 @@ SolarSight is an AI-driven "Resilience-First" renewable energy forecasting platf
 *   **Growth Phase**: Transition to a B2B SaaS model charging $0.05 per API call for industrial users, while keeping a free tier for individual homeowners (SDG Goal 7).
 
 ## 5. Climate Impact Recap
-By enabling the displacement of backup diesel generators and optimizing residential solar yields, SolarSight aims to achieve a **Net Carbon Offset of 5.2 Megatonnes of CO2e** across the Global South over the next 5 years.
+By enabling the displacement of fossil-fuel backups and optimizing residential solar yields globally, SolarSight aims to achieve a **Net Carbon Offset of 5.2 Megatonnes of CO2e** across the Global South and high-intensity urban centers over the next 5 years.
 
 ### Multi-SDG Alignment
 SolarSight is engineered to address **5 United Nations Sustainable Development Goals**:

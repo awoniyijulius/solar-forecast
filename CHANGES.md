@@ -180,9 +180,15 @@ docker-compose up --build
 - streamlit/app.py (full admin dashboard)
 - infra/docker-compose.yml (health checks, networking, volumes, precompute service)
 
+### Global Expansion & Universal Impact (NEW) 🌍
+- ✅ **Expanded City Support**: Added Rome (Italy), Madrid (Spain), Stockholm (Sweden), Singapore, and Sao Paulo (Brazil).
+- ✅ **Regional Grid Intensities**: Added high-resolution CO₂ emission factors for all new regions.
+- ✅ **Multi-Currency Frontend**: Added support for Euro (€), Swedish Krona (kr), Singapore Dollar (S$), and Brazilian Real (R$).
+- ✅ **Strategic Narrative**: Updated Prize Strategy to reflect a "Built for the World" vision, moving beyond a regional focus.
+
 ## Total Impact
 - **Files Created**: 10
-- **Files Modified**: 11
+- **Files Modified**: 15
 - **Critical Bugs Fixed**: 5
-- **Features Added**: 15+
-- **Lines of Code**: ~1500+
+- **Features Added**: 20+
+- **Lines of Code**: ~1650+

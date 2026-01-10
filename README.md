@@ -182,8 +182,13 @@ solar-forecast/
 - London, UK
 - Berlin, Germany
 - Paris, France
+- Rome, Italy
+- Madrid, Spain
+- Stockholm, Sweden
 - Tokyo, Japan
+- Singapore
 - New York, USA
+- Sao Paulo, Brazil
 - Dubai, UAE
 - Sydney, Australia
 

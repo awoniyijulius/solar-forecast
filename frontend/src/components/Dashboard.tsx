@@ -30,8 +30,13 @@ const CITIES = [
   { id: 'london', name: 'London, UK', currency: '£', rate: 0.34 },
   { id: 'berlin', name: 'Berlin, Germany', currency: '€', rate: 0.42 },
   { id: 'paris', name: 'Paris, France', currency: '€', rate: 0.28 },
+  { id: 'rome', name: 'Rome, Italy', currency: '€', rate: 0.25 },
+  { id: 'madrid', name: 'Madrid, Spain', currency: '€', rate: 0.22 },
+  { id: 'stockholm', name: 'Stockholm, Sweden', currency: 'kr', rate: 1.20 },
   { id: 'tokyo', name: 'Tokyo, Japan', currency: '¥', rate: 32.0 },
+  { id: 'singapore', name: 'Singapore', currency: 'S$', rate: 0.32 },
   { id: 'new_york', name: 'New York, USA', currency: '$', rate: 0.24 },
+  { id: 'sao_paulo', name: 'Sao Paulo, Brazil', currency: 'R$', rate: 0.65 },
   { id: 'dubai', name: 'Dubai, UAE', currency: 'AED', rate: 0.45 },
   { id: 'sydney', name: 'Sydney, Australia', currency: 'A$', rate: 0.38 },
 ];

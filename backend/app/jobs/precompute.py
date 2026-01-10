@@ -16,8 +16,13 @@ DEFAULT_CITIES = [
     {"name": "london", "lat": 51.5074, "lon": -0.1278},
     {"name": "berlin", "lat": 52.52, "lon": 13.405},
     {"name": "paris", "lat": 48.8566, "lon": 2.3522},
+    {"name": "rome", "lat": 41.9028, "lon": 12.4964},
+    {"name": "madrid", "lat": 40.4168, "lon": -3.7038},
+    {"name": "stockholm", "lat": 59.3293, "lon": 18.0686},
     {"name": "tokyo", "lat": 35.6762, "lon": 139.6503},
+    {"name": "singapore", "lat": 1.3521, "lon": 103.8198},
     {"name": "new_york", "lat": 40.7128, "lon": -74.0060},
+    {"name": "sao_paulo", "lat": -23.5505, "lon": -46.6333},
     {"name": "dubai", "lat": 25.2048, "lon": 55.2708},
     {"name": "sydney", "lat": -33.8688, "lon": 151.2093}
 ]

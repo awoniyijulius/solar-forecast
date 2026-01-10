@@ -13,6 +13,11 @@ CITY_GRID_INTENSITY = {
     "new_york": 220.0,   # Gas/Hydro/Nuclear
     "dubai": 580.0,      # Natural Gas dominant
     "sydney": 650.0,     # Coal/Solar transition
+    "rome": 210.0,       # Mixed/Gas/Solar
+    "madrid": 160.0,     # High Renewables mix
+    "stockholm": 12.0,   # Hydro/Nuclear/Wind (Ultra-low)
+    "singapore": 380.0,  # Natural Gas
+    "sao_paulo": 95.0,   # Hydro-dominant
     "default": 450.0
 }
 
