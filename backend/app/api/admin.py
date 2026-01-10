@@ -44,28 +44,33 @@ async def get_system_metrics():
     
     cache = CacheClient()
     
-    # Get cache info (basic stats)
     try:
-        cache_info = cache.r.info()
-        cache_keys = cache.r.keys("*")
-        
-        return {
-            "cache": {
-                "connected": True,
-                "keys_count": len(cache_keys),
-                "memory_used_mb": cache_info.get("used_memory", 0) / (1024 * 1024),
-                "uptime_seconds": cache_info.get("uptime_in_seconds", 0)
-            },
-            "api": {
-                "status": "healthy",
-                "version": "0.1.0"
-            },
-            "model": {
-                "type": "LightGBM",
-                "version": "1.0",
-                "last_trained": "2024-01-01T00:00:00Z"  # Placeholder
+        if cache.redis_client:
+            cache_info = cache.redis_client.info()
+            cache_keys = cache.redis_client.keys("*")
+            
+            return {
+                "cache": {
+                    "connected": True,
+                    "keys_count": len(cache_keys),
+                    "memory_used_mb": cache_info.get("used_memory", 0) / (1024 * 1024),
+                    "uptime_seconds": cache_info.get("uptime_in_seconds", 0)
+                },
+                "api": {
+                    "status": "healthy",
+                    "version": "0.1.0"
+                },
+                "model": {
+                    "type": "LightGBM",
+                    "version": "1.0",
+                    "last_trained": "2024-01-01T00:00:00Z"  # Placeholder
+                }
             }
-        }
+        else:
+             return {
+                "cache": {"connected": False, "status": "Using Local Mode"},
+                "api": {"status": "healthy"}
+            }
     except Exception as e:
         return {
             "cache": {"connected": False, "error": str(e)},
