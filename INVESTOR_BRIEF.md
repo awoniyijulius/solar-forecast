@@ -53,4 +53,4 @@ Our architecture is designed for 99.9% uptime on cost-optimized cloud infrastruc
 ### 🚀 Conclusion
 SolarSight is more than a dashboard; it is a **universal utility** for the clean energy age. We are seeking strategic partners and investors to help us scale this intelligence to 1,000+ cities and millions of decentralized energy stakeholders.
 
-**Managed by the Antigravity AI Agent** | **[View Live Demo](https://solarsight-intel.onrender.com)**
+**Managed by the SolarSight Team** | **[View Live Demo](https://solarsight-intel.onrender.com)**

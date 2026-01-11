@@ -145,7 +145,7 @@ const App: React.FC = () => {
               </p>
             </div>
             <p className="text-white text-sm font-black tracking-tight mt-6 md:mt-0">
-              Developed by <span className="text-green-500 underline underline-offset-8 decoration-green-900/50">Olayinka Julius</span>
+              SolarSight Development Team
             </p>
           </div>
         </div>
